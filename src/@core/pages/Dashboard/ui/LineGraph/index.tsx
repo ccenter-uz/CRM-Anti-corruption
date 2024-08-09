@@ -17,7 +17,7 @@ export const LineChart: FC<Props> = (props) => {
         labels: !data ? [] : data?.map((_: string, index: number) => index + 1),
         datasets: [
           {
-            label: "# of Votes",
+            label: "",
             data: !data
               ? []
               : data?.map(
@@ -42,8 +42,17 @@ export const LineChart: FC<Props> = (props) => {
             ],
             borderWidth: 1,
           },
-        ],
+        ]
       }}
+
+      options={{
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+      }}
+      
     />
   );
 };

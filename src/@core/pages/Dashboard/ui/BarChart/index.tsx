@@ -19,7 +19,7 @@ export const BarChart: FC<Props> = (props) => {
           : data?.slice(0, 10).map((_: string, index: number) => index + 1),
         datasets: [
           {
-            label: "Dataset 1",
+            label: "",
             data: !data
               ? []
               : data?.map(
@@ -30,6 +30,14 @@ export const BarChart: FC<Props> = (props) => {
             borderColor: "rgba(255, 99, 132, 0.2)",
           },
         ],
+      }}
+
+      options={{
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
       }}
     />
   );
