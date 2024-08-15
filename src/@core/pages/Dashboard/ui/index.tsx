@@ -13,7 +13,6 @@ import {
   Input,
   List,
   ListItem,
-  flexbox,
 } from "@chakra-ui/react";
 import { TriangleDownIcon } from "@chakra-ui/icons";
 import { FormControl, FormLabel } from "@chakra-ui/react";
@@ -23,7 +22,7 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import { Check, Eye, EyeOff, Search, Send, X } from "react-feather";
+import { Check, Eye, EyeOff, Search, Send, X, Icon } from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -42,9 +41,17 @@ import { LineChart } from "./LineGraph";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
 
-interface StatItem {
-  bgColor: string; title: string; statNumber: number
-}
+interface StatItemInterface {
+  bgColor: string; 
+  title: string; 
+  statNumber: number,
+  icon: Icon | any
+};
+interface ChartItemNameInterface {
+  array: any, 
+  sliceFrom?: number, 
+  sliceTo?: number
+};
 
 export const Dashboard: FC<any> = (props) => {
   const breadcrumbs = [
@@ -259,7 +266,7 @@ export const Dashboard: FC<any> = (props) => {
   const firstLetterCapitalizer = (item: string | undefined) => item !== undefined ? `${item[0].toUpperCase()}${item.slice(1)}` : "";
   
   // Mini Components
-  const chartItemNamesList = (array: any, sliceFrom?: number, sliceTo?: number ) => {
+  const ChartItemNamesList: FC<any> = ({array, sliceFrom, sliceTo}: ChartItemNameInterface) => {
     
     const initialArray = ![sliceFrom, sliceTo].includes(undefined) ? array?.slice(sliceFrom, sliceTo) : array;
     
@@ -284,7 +291,7 @@ export const Dashboard: FC<any> = (props) => {
       </SimpleGrid>
     )};
   
-  const statBox = ({bgColor, title, statNumber}: StatItem) => (
+  const StatBox: FC<any> = ({bgColor, title, statNumber, icon}: StatItemInterface) => (
     <Card key={title} variant="outline" borderColor={"lightgrey"}>
       <CardBody
         p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
@@ -303,7 +310,7 @@ export const Dashboard: FC<any> = (props) => {
           justify={"center"}
           gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
           >
-            <TriangleDownIcon width={"20px"} height={"20px"} />
+            {icon}
             <Text
               fontSize={{
                 base: "14px",
@@ -360,37 +367,39 @@ export const Dashboard: FC<any> = (props) => {
     }, [params]);
 
       // Consts
-    const statBoxArray: Array<StatItem> = [
+    const statBoxArray: Array<StatItemInterface> = [
       {
         bgColor: "#4535C1",
         title: "Жами мурожаатлар",
-        statNumber: dataWithRegion?.Applicationcount
-        
+        statNumber: dataWithRegion?.Applicationcount,
+        icon: <TriangleDownIcon width={"22px"} height={"22px"}/>
       },
       {
         bgColor: "#478CCF",
         title: "Тушунтирилганлар",
-        statNumber: dataWithRegion?.ApplicationExplainedcount
-        
+        statNumber: dataWithRegion?.ApplicationExplainedcount,
+        icon: <Eye width={"22px"} height={"22px"}/>
       },
       {
         bgColor: "#36C2CE",
         title: "Тегишли бўйича юборилганлар",
-        statNumber: dataWithRegion?.ApplicationSendedToOrganization
-        
+        statNumber: dataWithRegion?.ApplicationSendedToOrganization,
+        icon: <Send width={"22px"} height={"22px"}/>
       },
       {
         bgColor: "#50B498",
         title: "Қаноатлантирилганлар",
-        statNumber: dataWithRegion?.ApplicationSatisfiedcount
+        statNumber: dataWithRegion?.ApplicationSatisfiedcount,
+        icon: <Check width={"22px"} height={"22px"}/>
       },
       {
         bgColor: "#77E4C8",
         title: "Аноним",
-        statNumber: dataWithRegion?.ApplicationAnonymouscount
+        statNumber: dataWithRegion?.ApplicationAnonymouscount,
+        icon: <EyeOff width={"22px"} height={"22px"}/>
       },
     ];
-   
+
     return (
       <Box
       p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
@@ -411,7 +420,12 @@ export const Dashboard: FC<any> = (props) => {
           my={"8px"}
           gap={"8px"}
           >
-            {statBoxArray.map(item => statBox(item))}
+            {statBoxArray.map(item => <StatBox 
+            key={item.title} 
+            bgColor={item.bgColor} 
+            title={item.title} 
+            statNumber={item.statNumber} 
+            icon={item.icon}/>)}
           </SimpleGrid>
           <PaperContent>
           <Tooltip label="Катта қилиш">
@@ -532,30 +546,13 @@ export const Dashboard: FC<any> = (props) => {
           <PaperContent>
           <Box w={"100%"} h={"fit-content"}>
           <LineChart data={lineGraph} />
-          {chartItemNamesList(Array.from(lineGraph))}
-          {/* <SimpleGrid
-            columns={1}
-            p={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-            gap={"8px"}
-            >
-            <List height={150} display={"flex"} flexDirection={"column"} flexWrap={"wrap"} alignItems={"space-between"}>
-            {Array.from(lineGraph)?.map((item: any, index: number) => (
-            <ListItem
-            key={item.id}
-            fontSize={scssVariables.fonts.span}
-            color={scssVariables.textGreyColor}
-            >
-            {index + 1}. {firstLetterCapitalizer(item?.title)}
-            </ListItem>
-            ))}
-            </List>
-            </SimpleGrid> */}
+          <ChartItemNamesList array={Array.from(lineGraph)} />
             </Box>
             </PaperContent>
             <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
             <BarChart data={barGraph} />
-            {chartItemNamesList(Array.from(barGraph), 0, 10)}
+            <ChartItemNamesList array={Array.from(barGraph)} sliceFrom={0} sliceTo={10} />
             </Box>
             </PaperContent>
           </SimpleGrid>
