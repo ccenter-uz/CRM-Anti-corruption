@@ -22,6 +22,7 @@ import {
   resend_applicationList,
   responseList,
   selectStyle,
+  statusList
 } from "../model/helper";
 import { Controller, useForm } from "react-hook-form";
 import { useGlobal } from "@/@core/application/store/global";
@@ -392,6 +393,7 @@ export const Leaverequest = () => {
                 ))}
               </Select>
             </FormControl>
+
             <FormControl>
               <FormLabel htmlFor="applicant" sx={labelStyle}>
                 Мурожаатчи
@@ -490,6 +492,18 @@ export const Leaverequest = () => {
                 мажбурий катак
               </FormErrorMessage>
             </FormControl>
+            <FormControl>
+                <FormLabel htmlFor="status" sx={labelStyle}>
+                  Мурожаат холати
+                </FormLabel>
+                <Select sx={selectStyle} id="inProcces" {...register("inProcces")}>
+                  {statusList.map((status) => (
+                    <option key={status.id} value={status.label}>
+                      {status.label}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
             <FormControl>
               <FormLabel htmlFor="comment" sx={labelStyle}>
                 Мурожаатнинг қисқача мазмуни
