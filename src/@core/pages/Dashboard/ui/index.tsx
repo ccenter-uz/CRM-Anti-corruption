@@ -42,6 +42,10 @@ import { LineChart } from "./LineGraph";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
 
+interface StatItem {
+  bgColor: string; title: string; statNumber: number
+}
+
 export const Dashboard: FC<any> = (props) => {
   const breadcrumbs = [
     {
@@ -250,9 +254,11 @@ export const Dashboard: FC<any> = (props) => {
       return router.push("?", { scroll: false });
     }
   };
-  
+
+  // Utils
   const firstLetterCapitalizer = (item: string | undefined) => item !== undefined ? `${item[0].toUpperCase()}${item.slice(1)}` : "";
   
+  // Mini Components
   const chartItemNamesList = (array: any, sliceFrom?: number, sliceTo?: number ) => {
     
     const initialArray = ![sliceFrom, sliceTo].includes(undefined) ? array?.slice(sliceFrom, sliceTo) : array;
@@ -277,7 +283,48 @@ export const Dashboard: FC<any> = (props) => {
       </List>
       </SimpleGrid>
     )};
-    
+  
+  const statBox = ({bgColor, title, statNumber}: StatItem) => (
+    <Card key={title} variant="outline" borderColor={"lightgrey"}>
+      <CardBody
+        p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
+        h={"auto"}
+        bg={bgColor}
+        color={"white"}
+      >
+        <HStack
+          flexDirection={{
+            base: "column",
+            sm: "column",
+            md: "column",
+            xl: "row",
+          }}
+          alignItems={"center"}
+          justify={"center"}
+          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
+          >
+            <TriangleDownIcon width={"20px"} height={"20px"} />
+            <Text
+              fontSize={{
+                base: "14px",
+                sm: "14px",
+                md: "18px",
+                xl: "18px",
+            }}
+            >
+              {title}:
+            </Text>
+            <Text
+              fontWeight={600}
+              fontSize={scssVariables.fonts.titleSize}
+              >
+              {statNumber || 0}
+            </Text>
+        </HStack>
+      </CardBody>
+    </Card>
+  );
+
     // RESET
     useEffect(() => {
       const timeout = setTimeout(() => {
@@ -311,7 +358,39 @@ export const Dashboard: FC<any> = (props) => {
       
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params]);
-    
+
+      // Consts
+    const statBoxArray: Array<StatItem> = [
+      {
+        bgColor: "#4535C1",
+        title: "Жами мурожаатлар",
+        statNumber: dataWithRegion?.Applicationcount
+        
+      },
+      {
+        bgColor: "#478CCF",
+        title: "Тушунтирилганлар",
+        statNumber: dataWithRegion?.ApplicationExplainedcount
+        
+      },
+      {
+        bgColor: "#36C2CE",
+        title: "Тегишли бўйича юборилганлар",
+        statNumber: dataWithRegion?.ApplicationSendedToOrganization
+        
+      },
+      {
+        bgColor: "#50B498",
+        title: "Қаноатлантирилганлар",
+        statNumber: dataWithRegion?.ApplicationSatisfiedcount
+      },
+      {
+        bgColor: "#77E4C8",
+        title: "Аноним",
+        statNumber: dataWithRegion?.ApplicationAnonymouscount
+      },
+    ];
+   
     return (
       <Box
       p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
@@ -332,193 +411,7 @@ export const Dashboard: FC<any> = (props) => {
           my={"8px"}
           gap={"8px"}
           >
-          <Card variant="outline" borderColor={"lightgrey"}>
-          <CardBody
-          p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          h={"auto"}
-          bg={"#4535C1"}
-          color={"white"}
-          >
-          <HStack
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          alignItems={"center"}
-          justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-          <TriangleDownIcon width={"20px"} height={"20px"} />
-          <Text
-          fontSize={{
-            base: "14px",
-            sm: "14px",
-            md: "18px",
-            xl: "18px",
-          }}
-          >
-          Жами мурожаатлар:
-          </Text>
-          <Text
-          fontWeight={600}
-          fontSize={scssVariables.fonts.titleSize}
-          >
-          {dataWithRegion?.Applicationcount || 0}
-          </Text>
-          </HStack>
-          </CardBody>
-          </Card>
-          <Card variant="outline" borderColor={"lightgrey"}>
-          <CardBody
-          p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          bg={"#478CCF"}
-          color={"white"}
-          >
-          <HStack
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          alignItems={"center"}
-          justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-          <Eye width={"20px"} height={"20px"} />
-          <Text
-          fontSize={{
-            base: "14px",
-            sm: "14px",
-            md: "18px",
-            xl: "18px",
-          }}
-          >
-          Тушунтирилганлар:
-          </Text>
-          <Text
-          fontWeight={600}
-          fontSize={scssVariables.fonts.titleSize}
-          >
-          {dataWithRegion?.ApplicationExplainedcount || 0}
-          </Text>
-          </HStack>
-          </CardBody>
-          </Card>
-          <Card variant="outline" borderColor={"lightgrey"}>
-          <CardBody
-          p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          bg={"#36C2CE"}
-          color={"white"}
-          >
-          <HStack
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          alignItems={"center"}
-          justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-          <Send width={"22px"} height={"22px"} />
-          <Text
-          fontSize={{
-            base: "14px",
-            sm: "14px",
-            md: "18px",
-            xl: "18px",
-          }}
-          >
-          Тегишли бўйича юборилганлар:
-          </Text>
-          <Text
-          fontWeight={600}
-          fontSize={scssVariables.fonts.titleSize}
-          >
-          {dataWithRegion?.ApplicationSendedToOrganization || 0}
-          </Text>
-          </HStack>
-          </CardBody>
-          </Card>
-          <Card variant="outline" borderColor={"lightgrey"}>
-          <CardBody
-          p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          h={"auto"}
-          bg={"#50B498"}
-          color={"white"}
-          >
-          <HStack
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          alignItems={"center"}
-          justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-          <Check width={"20px"} height={"20px"} />
-          <Text
-          fontSize={{
-            base: "14px",
-            sm: "14px",
-            md: "18px",
-            xl: "18px",
-          }}
-          >
-          Қаноатлантирилганлар:
-          </Text>
-          <Text
-          fontWeight={600}
-          fontSize={scssVariables.fonts.titleSize}
-          >
-          {dataWithRegion?.ApplicationSatisfiedcount || 0}
-          </Text>
-          </HStack>
-          </CardBody>
-          </Card>
-          <Card variant="outline" borderColor={"lightgrey"}>
-          <CardBody
-          p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          bg={"#77E4C8"}
-          color={"white"}
-          >
-          <HStack
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          alignItems={"center"}
-          justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-          <EyeOff width={"22px"} height={"22px"} />
-          <Text
-          fontSize={{
-            base: "14px",
-            sm: "14px",
-            md: "18px",
-            xl: "18px",
-          }}
-          >
-          Аноним:
-          </Text>
-          <Text
-          fontWeight={600}
-          fontSize={scssVariables.fonts.titleSize}
-          >
-          {dataWithRegion?.ApplicationAnonymouscount || 0}
-          </Text>
-          </HStack>
-          </CardBody>
-          </Card>
+            {statBoxArray.map(item => statBox(item))}
           </SimpleGrid>
           <PaperContent>
           <Tooltip label="Катта қилиш">
