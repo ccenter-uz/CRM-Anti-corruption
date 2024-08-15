@@ -41,7 +41,7 @@ import { LineChart } from "./LineGraph";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
 
-interface StatItem {
+interface StatItemInterface {
   bgColor: string; 
   title: string; 
   statNumber: number,
@@ -291,7 +291,7 @@ export const Dashboard: FC<any> = (props) => {
       </SimpleGrid>
     )};
   
-  const StatBox: FC<any> = ({bgColor, title, statNumber, icon}: StatItem) => (
+  const StatBox: FC<any> = ({bgColor, title, statNumber, icon}: StatItemInterface) => (
     <Card key={title} variant="outline" borderColor={"lightgrey"}>
       <CardBody
         p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
@@ -367,7 +367,7 @@ export const Dashboard: FC<any> = (props) => {
     }, [params]);
 
       // Consts
-    const statBoxArray: Array<StatItem> = [
+    const statBoxArray: Array<StatItemInterface> = [
       {
         bgColor: "#4535C1",
         title: "Жами мурожаатлар",
