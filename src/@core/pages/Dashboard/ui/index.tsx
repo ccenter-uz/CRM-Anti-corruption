@@ -22,7 +22,7 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import { Check, Eye, EyeOff, Search, Send, X, Icon } from "react-feather";
+import { Check, Eye, EyeOff, Search, Send, X, Clock,Icon } from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -391,6 +391,12 @@ export const Dashboard: FC<any> = (props) => {
         title: "Қаноатлантирилганлар",
         statNumber: dataWithRegion?.ApplicationSatisfiedcount,
         icon: <Check width={"22px"} height={"22px"}/>
+      },
+      {
+        bgColor: "#68B684",
+        title: "Жараёнда",
+        statNumber: dataWithRegion?.ApplicationInProcces,
+        icon: <Clock width={"22px"} height={"22px"}/>
       },
       {
         bgColor: "#77E4C8",
