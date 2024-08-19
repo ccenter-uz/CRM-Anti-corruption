@@ -294,6 +294,22 @@ export const Itempage: FC = () => {
                 {data[0]?.resend_application || "Маълумот йўқ"}
               </Text>
             </Box>
+            <Box>
+              <Text
+                color={scssVariables.textGreyColor}
+                fontWeight={500}
+                fontSize={scssVariables.fonts.parag}
+              >
+                Мурожаат холати
+              </Text>
+              <Text
+                color={scssVariables.textBlackColor}
+                fontWeight={400}
+                fontSize={scssVariables.fonts.span}
+              >
+                {data[0]?.inProcces || "Маълумот йўқ"}
+              </Text>
+            </Box>
           </SimpleGrid>
           <Box
             p={"16px"}
