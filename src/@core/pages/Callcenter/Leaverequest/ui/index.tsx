@@ -493,18 +493,6 @@ export const Leaverequest = () => {
               </FormErrorMessage>
             </FormControl>
             <FormControl>
-                <FormLabel htmlFor="status" sx={labelStyle}>
-                  Мурожаат холати
-                </FormLabel>
-                <Select sx={selectStyle} id="inProcces" {...register("inProcces")}>
-                  {statusList.map((status) => (
-                    <option key={status.id} value={status.label}>
-                      {status.label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            <FormControl>
               <FormLabel htmlFor="comment" sx={labelStyle}>
                 Мурожаатнинг қисқача мазмуни
               </FormLabel>
@@ -568,6 +556,18 @@ export const Leaverequest = () => {
                 ]}
               />
             </FormControl>
+            <FormControl>
+                <FormLabel htmlFor="status" sx={labelStyle}>
+                  Мурожаат холати
+                </FormLabel>
+                <Select sx={selectStyle} id="inProcces" {...register("inProcces")}>
+                  {statusList.map((status) => (
+                    <option key={status.id} value={status.label}>
+                      {status.label}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
             <FormControl>
               <FormLabel htmlFor="response" sx={labelStyle}>
                 Мурожаатни жавоби
