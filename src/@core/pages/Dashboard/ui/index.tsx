@@ -13,6 +13,8 @@ import {
   Input,
   List,
   ListItem,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { TriangleDownIcon } from "@chakra-ui/icons";
 import { FormControl, FormLabel } from "@chakra-ui/react";
@@ -22,7 +24,16 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import { Check, Eye, EyeOff, Search, Send, X, Clock,Icon } from "react-feather";
+import {
+  Check,
+  Eye,
+  EyeOff,
+  Search,
+  Send,
+  X,
+  Clock,
+  Icon,
+} from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -41,17 +52,22 @@ import { LineChart } from "./LineGraph";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
 
+const enum TYPE {
+  notDrafts = "0",
+  drafts = "1",
+}
+
 interface StatItemInterface {
-  bgColor: string; 
-  title: string; 
-  statNumber: number,
-  icon: Icon | any
-};
+  bgColor: string;
+  title: string;
+  statNumber: number;
+  icon: Icon | any;
+}
 interface ChartItemNameInterface {
-  array: any, 
-  sliceFrom?: number, 
-  sliceTo?: number
-};
+  array: any;
+  sliceFrom?: number;
+  sliceTo?: number;
+}
 
 export const Dashboard: FC<any> = (props) => {
   const breadcrumbs = [
@@ -89,22 +105,24 @@ export const Dashboard: FC<any> = (props) => {
     formState: { errors: errors1 },
   } = useForm();
   const { id, dataWithRegion, setDataWithRegion, tableData, setTableData } =
-  useDashboardSlicer();
+    useDashboardSlicer();
   const screenMap = useFullScreenHandle();
   const screenGraph = useFullScreenHandle();
   const screenTable = useFullScreenHandle();
   const [lineGraph, setLineGraph] = useState<any>(false);
   const [barGraph, setBarGraph] = useState<any>(false);
-  
+  const [type, setType] = useState<string>(TYPE.notDrafts);
+
   // GET-MAP
   const getData = async () => {
     const params = {
       region: id,
+      type,
     };
     const res = await getDataWithRegion(params);
     res?.status === 200 && setDataWithRegion(res?.data);
   };
-  
+
   // GET-LINEGRAPH
   const getLine = async () => {
     let query;
@@ -119,13 +137,13 @@ export const Dashboard: FC<any> = (props) => {
         date_from: Intl.DateTimeFormat("ru-RU").format(date_from),
         date_to: Intl.DateTimeFormat("ru-RU").format(date_to),
       };
-      
+
       const res = await getLineGraph(query);
-      
+
       res?.status === 200 && setLineGraph(res?.data);
     } else {
       const res = await getLineGraph();
-      
+
       res?.status === 200 && setLineGraph(res?.data);
     }
   };
@@ -143,13 +161,13 @@ export const Dashboard: FC<any> = (props) => {
         date_from: Intl.DateTimeFormat("ru-RU").format(date_from),
         date_to: Intl.DateTimeFormat("ru-RU").format(date_to),
       };
-      
+
       const res = await getBarGraph(query);
-      
+
       res?.status === 200 && setBarGraph(res?.data);
     } else {
       const res = await getBarGraph();
-      
+
       res?.status === 200 && setBarGraph(res?.data);
     }
   };
@@ -163,20 +181,22 @@ export const Dashboard: FC<any> = (props) => {
       subCategoryId: params.get("subCategoryId") || null,
     };
     const res = await getTableData(queryParams);
-    
+
     res?.status === 200 &&
-    (setTableData(
-      res?.data?.results?.map((item: any, index: number) => ({
-        index: index + 1,
-        razdel: firstLetterCapitalizer(item?.title),
-        podrazdel: firstLetterCapitalizer(item?.sub_category_orgs?.title),
-        income: item?.sub_category_orgs?.count,
-        region: firstLetterCapitalizer(item?.sub_category_orgs?.region?.title),
-      }))
-    ),
-    setTotal(res?.data?.pagination?.totalItems));
+      (setTableData(
+        res?.data?.results?.map((item: any, index: number) => ({
+          index: index + 1,
+          razdel: firstLetterCapitalizer(item?.title),
+          podrazdel: firstLetterCapitalizer(item?.sub_category_orgs?.title),
+          income: item?.sub_category_orgs?.count,
+          region: firstLetterCapitalizer(
+            item?.sub_category_orgs?.region?.title
+          ),
+        }))
+      ),
+      setTotal(res?.data?.pagination?.totalItems));
   };
-  
+
   // FINISH-POST
   const handleFinish = async (values: any) => {
     const query = `?&pageSize=${pageSize}&region=${values.region}&categoryId=${
@@ -184,21 +204,21 @@ export const Dashboard: FC<any> = (props) => {
     }&subCategoryId=${values.subCategoryId}&date_from=${params.get(
       "date_from"
     )}&date_to=${params.get("date_to")}`;
-    
+
     router.push(query, { scroll: false });
   };
-  
+
   // CHANGE
   const handleChangeRazdel = async (e: { value: string }) => {
     if (e?.value === "null") {
       await getPodrazdel();
     } else {
       const data = await postChangeRazdel(e?.value);
-      
+
       data?.status === 200 && setPodrazdel(data?.data.results);
     }
   };
-  
+
   // CHANGE-PAGE-pageSize
   const handlePageSizeChange = (pageSize: number) => {
     const query = `?pageSize=${pageSize}&region=${params.get(
@@ -206,10 +226,10 @@ export const Dashboard: FC<any> = (props) => {
     )}&categoryId=${params.get("categoryId")}&subCategoryId=${params.get(
       "subCategoryId"
     )}`;
-    
+
     router.push(query);
   };
-  
+
   // CLEAR
   const handleClear = async () => {
     reset({
@@ -227,7 +247,7 @@ export const Dashboard: FC<any> = (props) => {
       return router.push("?", { scroll: false });
     }
   };
-  
+
   // Search-Graph
   const searchGraph = async (values: any) => {
     const query = `?&pageSize=${pageSize}&region=${params.get(
@@ -237,7 +257,7 @@ export const Dashboard: FC<any> = (props) => {
     )}&date_from=${values.date_from}&date_to=${values.date_to}`;
     router.push(query, { scroll: false });
   };
-  
+
   // Clear-Graph
   const clearGraph = async () => {
     reset1({
@@ -263,35 +283,54 @@ export const Dashboard: FC<any> = (props) => {
   };
 
   // Utils
-  const firstLetterCapitalizer = (item: string | undefined) => item !== undefined ? `${item[0].toUpperCase()}${item.slice(1)}` : "";
-  
+  const firstLetterCapitalizer = (item: string | undefined) =>
+    item !== undefined ? `${item[0].toUpperCase()}${item.slice(1)}` : "";
+
   // Mini Components
-  const ChartItemNamesList: FC<any> = ({array, sliceFrom, sliceTo}: ChartItemNameInterface) => {
-    
-    const initialArray = ![sliceFrom, sliceTo].includes(undefined) ? array?.slice(sliceFrom, sliceTo) : array;
-    
-    return(
+  const ChartItemNamesList: FC<any> = ({
+    array,
+    sliceFrom,
+    sliceTo,
+  }: ChartItemNameInterface) => {
+    const initialArray = ![sliceFrom, sliceTo].includes(undefined)
+      ? array?.slice(sliceFrom, sliceTo)
+      : array;
+
+    return (
       <SimpleGrid
-      columns={{ base: 1, sm: 1, md: 1, xl: 1 }}
-      p={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-      gap={"8px"}
+        columns={{ base: 1, sm: 1, md: 1, xl: 1 }}
+        p={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
+        gap={"8px"}
       >
-      <List height={150} display={"flex"} flexDirection={"column"} flexWrap={"wrap"} alignItems={"space-between"} overflow="auto">
-      {initialArray?.map((item: any, index: number) => (
-        <ListItem
-        width={350}
-        key={item.id}
-        fontSize={scssVariables.fonts.span}
-        color={scssVariables.textGreyColor}
+        <List
+          height={150}
+          display={"flex"}
+          flexDirection={"column"}
+          flexWrap={"wrap"}
+          alignItems={"space-between"}
+          overflow="auto"
         >
-        {index + 1}. {firstLetterCapitalizer(item?.title)}
-        </ListItem>
-      ))}
-      </List>
+          {initialArray?.map((item: any, index: number) => (
+            <ListItem
+              width={350}
+              key={item.id}
+              fontSize={scssVariables.fonts.span}
+              color={scssVariables.textGreyColor}
+            >
+              {index + 1}. {firstLetterCapitalizer(item?.title)}
+            </ListItem>
+          ))}
+        </List>
       </SimpleGrid>
-    )};
-  
-  const StatBox: FC<any> = ({bgColor, title, statNumber, icon}: StatItemInterface) => (
+    );
+  };
+
+  const StatBox: FC<any> = ({
+    bgColor,
+    title,
+    statNumber,
+    icon,
+  }: StatItemInterface) => (
     <Card key={title} variant="outline" borderColor={"lightgrey"}>
       <CardBody
         p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
@@ -309,416 +348,464 @@ export const Dashboard: FC<any> = (props) => {
           alignItems={"center"}
           justify={"center"}
           gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-          >
-            {icon}
-            <Text
-              fontSize={{
-                base: "14px",
-                sm: "14px",
-                md: "18px",
-                xl: "18px",
+        >
+          {icon}
+          <Text
+            fontSize={{
+              base: "14px",
+              sm: "14px",
+              md: "18px",
+              xl: "18px",
             }}
-            >
-              {title}:
-            </Text>
-            <Text
-              fontWeight={600}
-              fontSize={scssVariables.fonts.titleSize}
-              >
-              {statNumber || 0}
-            </Text>
+          >
+            {title}:
+          </Text>
+          <Text fontWeight={600} fontSize={scssVariables.fonts.titleSize}>
+            {statNumber || 0}
+          </Text>
         </HStack>
       </CardBody>
     </Card>
   );
 
-    // RESET
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        reset({
-          region: params.get("region") || "null",
-          categoryId: params.get("categoryId") || "null",
-          subCategoryId: params.get("subCategoryId") || "null",
-        });
-        reset1({
-          date_from: params.get("date_from") || "",
-          date_to: params.get("date_to") || "",
-        });
-      }, 1000);
-      
-      return () => clearTimeout(timeout);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    
-    // LOAD-MAP-BY-ID
-    useEffect(() => {
-      getData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
-    
-    // LOAD-TABLE-DATA
-    useEffect(() => {
-      if (regions.length === 0 || razdel.length === 0) {
-        Promise.all([getRegions(), getRazdel()]);
-      }
-      Promise.all([getLine(), getBar(), getDataTable()]);
-      
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params]);
+  // RESET
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      reset({
+        region: params.get("region") || "null",
+        categoryId: params.get("categoryId") || "null",
+        subCategoryId: params.get("subCategoryId") || "null",
+      });
+      reset1({
+        date_from: params.get("date_from") || "",
+        date_to: params.get("date_to") || "",
+      });
+    }, 1000);
 
-      // Consts
-    const statBoxArray: Array<StatItemInterface> = [
-      {
-        bgColor: "#4535C1",
-        title: "Жами мурожаатлар",
-        statNumber: dataWithRegion?.Applicationcount,
-        icon: <TriangleDownIcon width={"22px"} height={"22px"}/>
-      },
-      {
-        bgColor: "#478CCF",
-        title: "Тушунтирилганлар",
-        statNumber: dataWithRegion?.ApplicationExplainedcount,
-        icon: <Eye width={"22px"} height={"22px"}/>
-      },
-      {
-        bgColor: "#36C2CE",
-        title: "Тегишли бўйича юборилганлар",
-        statNumber: dataWithRegion?.ApplicationSendedToOrganization,
-        icon: <Send width={"22px"} height={"22px"}/>
-      },
-      {
-        bgColor: "#50B498",
-        title: "Қаноатлантирилганлар",
-        statNumber: dataWithRegion?.ApplicationSatisfiedcount,
-        icon: <Check width={"22px"} height={"22px"}/>
-      },
-      {
-        bgColor: "#68B684",
-        title: "Жараёнда",
-        statNumber: dataWithRegion?.ApplicationInProcces,
-        icon: <Clock width={"22px"} height={"22px"}/>
-      },
-      {
-        bgColor: "#77E4C8",
-        title: "Аноним",
-        statNumber: dataWithRegion?.ApplicationAnonymouscount,
-        icon: <EyeOff width={"22px"} height={"22px"}/>
-      },
-    ];
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return (
-      <Box
+  // LOAD-MAP-BY-ID
+  useEffect(() => {
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, type]);
+
+  // LOAD-TABLE-DATA
+  useEffect(() => {
+    if (regions.length === 0 || razdel.length === 0) {
+      Promise.all([getRegions(), getRazdel()]);
+    }
+    Promise.all([getLine(), getBar(), getDataTable()]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
+
+  const onChangeType = (value: string) => {
+    setType(value);
+  };
+
+  // Consts
+  const statBoxArray: Array<StatItemInterface> = [
+    {
+      bgColor: "#4535C1",
+      title: "Жами мурожаатлар",
+      statNumber: dataWithRegion?.Applicationcount,
+      icon: <TriangleDownIcon width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#478CCF",
+      title: "Тушунтирилганлар",
+      statNumber: dataWithRegion?.ApplicationExplainedcount,
+      icon: <Eye width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#36C2CE",
+      title: "Тегишли бўйича юборилганлар",
+      statNumber: dataWithRegion?.ApplicationSendedToOrganization,
+      icon: <Send width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#50B498",
+      title: "Қаноатлантирилганлар",
+      statNumber: dataWithRegion?.ApplicationSatisfiedcount,
+      icon: <Check width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#68B684",
+      title: "Жараёнда",
+      statNumber: dataWithRegion?.ApplicationInProcces,
+      icon: <Clock width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#77E4C8",
+      title: "Аноним",
+      statNumber: dataWithRegion?.ApplicationAnonymouscount,
+      icon: <EyeOff width={"22px"} height={"22px"} />,
+    },
+  ];
+  const statBoxArrayDrafts: Array<StatItemInterface> = [
+    {
+      bgColor: "#4535C1",
+      title: "Жами мурожаатлар",
+      statNumber: dataWithRegion?.Applicationcount,
+      icon: <TriangleDownIcon width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#478CCF",
+      title: "Тушунтирилганлар",
+      statNumber: dataWithRegion?.ApplicationExplainedcount,
+      icon: <Eye width={"22px"} height={"22px"} />,
+    },
+    {
+      bgColor: "#77E4C8",
+      title: "Аноним",
+      statNumber: dataWithRegion?.ApplicationAnonymouscount,
+      icon: <EyeOff width={"22px"} height={"22px"} />,
+    },
+  ];
+
+  return (
+    <Box
       p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
-      >
-        {/* BREADCRUMB */}
-        <Flex className="breadcrumb" justifyContent={"flex-end"}>
+    >
+      {/* BREADCRUMB */}
+      <Flex className="breadcrumb" justifyContent={"flex-end"}>
         <BreadCrumb item={breadcrumbs} />
-        </Flex>
-      
-        {/* MAP */}
-        <Box className="map">
-          <FullScreen handle={screenMap}>
+      </Flex>
+
+      {/* MAP */}
+      <Box className="map">
+        <FullScreen handle={screenMap}>
           <Text fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
-          Ҳудудлар бўйича статистика:
+            Ҳудудлар бўйича статистика:
           </Text>
-          <SimpleGrid
-          columns={{ base: 1, sm: 2, md: 2, xl: 4 }}
-          my={"8px"}
-          gap={"8px"}
+          <RadioGroup
+            value={type}
+            display={"flex"}
+            justifyContent={"flex-end"}
+            alignItems={"center"}
+            gap={"10px"}
+            onChange={onChangeType}
           >
-            {statBoxArray.map(item => <StatBox 
-            key={item.title} 
-            bgColor={item.bgColor} 
-            title={item.title} 
-            statNumber={item.statNumber} 
-            icon={item.icon}/>)}
+            <Radio value={TYPE.notDrafts}>Мурожаатлар</Radio>
+            <Radio value={TYPE.drafts}>Қораламалар</Radio>
+          </RadioGroup>
+          <SimpleGrid
+            columns={{ base: 1, sm: 2, md: 2, xl: 4 }}
+            my={"8px"}
+            gap={"8px"}
+          >
+            {type === TYPE.notDrafts
+              ? statBoxArray.map((item) => (
+                  <StatBox
+                    key={item.title}
+                    bgColor={item.bgColor}
+                    title={item.title}
+                    statNumber={item.statNumber}
+                    icon={item.icon}
+                  />
+                ))
+              : statBoxArrayDrafts.map((item) => (
+                  <StatBox
+                    key={item.title}
+                    bgColor={item.bgColor}
+                    title={item.title}
+                    statNumber={item.statNumber}
+                    icon={item.icon}
+                  />
+                ))}
           </SimpleGrid>
           <PaperContent>
-          <Tooltip label="Катта қилиш">
-          <Eye
-          onClick={() =>
-            screenMap.active ? screenMap.exit() : screenMap.enter()
-          }
-          cursor={"pointer"}
-          color="grey"
-          width={"22px"}
-          height={"22px"}
-          style={{ marginLeft: "auto" }}
-          />
-          </Tooltip>
-          <Flex
-          align={"center"}
-          justify={{ base: "flex-start", xl: "space-between" }}
-          gap={{ base: "10px", sm: "10px", md: "20px", xl: "24px" }}
-          flexDirection={{
-            base: "column",
-            sm: "column",
-            md: "column",
-            xl: "row",
-          }}
-          >
-          <Box
-          flex={0.8}
-          h={"auto"}
-          mx={"auto"}
-          display={"flex"}
-          justifyContent={"center"}
-          >
-          <UzbMap />
-          </Box>
-          </Flex>
-          </PaperContent>
-          </FullScreen>
-        </Box>
-        
-        {/* GRAPH */}
-        <FullScreen handle={screenGraph} className="graph">
-          <PaperContent>
-          <Flex align={"center"} mb={"16px"}>
-          <Text
-          fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
-          >
-          Графиклар{" "}
-          <Text as={"span"} fontSize={scssVariables.fonts.parag}>
-          (бошланиш ва тугаш саналари)
-          </Text>
-          </Text>
-          <Tooltip label="Катта қилиш">
-          <Eye
-          onClick={() =>
-            screenGraph.active ? screenGraph.exit() : screenGraph.enter()
-          }
-          cursor={"pointer"}
-          color="grey"
-          width={"22px"}
-          height={"22px"}
-          style={{ marginLeft: "auto" }}
-          />
-          </Tooltip>
-          </Flex>
-          
-          <form onSubmit={handleSubmit1(searchGraph)} id="graph-form">
-          <SimpleGrid
-          columns={{ base: 1, sm: 2, md: 3, xl: 3 }}
-          alignItems={"center"}
-          gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
-          >
-          <Input
-          type="date"
-          aria-label="date-from"
-          id="date-from"
-          {...register1("date_from")}
-          />
-          <Input
-          type="date"
-          aria-label="date-to"
-          id="date-to"
-          {...register1("date_to")}
-          />
-          <Flex align={"center"} gap={"10px"} my={"8px"}>
-          <Button
-          onClick={clearGraph}
-          variant={"outline"}
-          sx={{
-            ...buttonStyle,
-            bg: "transparent",
-            color: scssVariables.primary,
-            borderColor: scssVariables.primary,
-            _hover: {
-              bg: "transparent",
-              opacity: 0.7,
-            },
-          }}
-          leftIcon={<X width={"18px"} height={"18px"} />}
-          >
-          Тозалаш
-          </Button>
-          <Button
-          form="graph-form"
-          type="submit"
-          sx={buttonStyle}
-          leftIcon={<Search width={"18px"} height={"18px"} />}
-          >
-          Қидириш
-          </Button>
-          </Flex>
-          </SimpleGrid>
-          </form>
-          </PaperContent>
-          <SimpleGrid
-          alignItems={"flex-start"}
-          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}
-          >
-          <PaperContent>
-          <Box w={"100%"} h={"fit-content"}>
-          <LineChart data={lineGraph} />
-          <ChartItemNamesList array={Array.from(lineGraph)} />
-            </Box>
-            </PaperContent>
-            <PaperContent>
-            <Box w={"100%"} h={"fit-content"}>
-            <BarChart data={barGraph} />
-            <ChartItemNamesList array={Array.from(barGraph)} sliceFrom={0} sliceTo={10} />
-            </Box>
-            </PaperContent>
-          </SimpleGrid>
-        </FullScreen>
-        
-          {/* TABLE */}
-          <FullScreen handle={screenTable}>
-            <Box className="table">
-            <PaperContent>
-            <Flex align={"center"}>
-            <Text
-            fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+            <Tooltip label="Катта қилиш">
+              <Eye
+                onClick={() =>
+                  screenMap.active ? screenMap.exit() : screenMap.enter()
+                }
+                cursor={"pointer"}
+                color="grey"
+                width={"22px"}
+                height={"22px"}
+                style={{ marginLeft: "auto" }}
+              />
+            </Tooltip>
+            <Flex
+              align={"center"}
+              justify={{ base: "flex-start", xl: "space-between" }}
+              gap={{ base: "10px", sm: "10px", md: "20px", xl: "24px" }}
+              flexDirection={{
+                base: "column",
+                sm: "column",
+                md: "column",
+                xl: "row",
+              }}
             >
-            Энг кўп мурожаатлар рўйхати:
+              <Box
+                flex={0.8}
+                h={"auto"}
+                mx={"auto"}
+                display={"flex"}
+                justifyContent={"center"}
+              >
+                <UzbMap />
+              </Box>
+            </Flex>
+          </PaperContent>
+        </FullScreen>
+      </Box>
+
+      {/* GRAPH */}
+      <FullScreen handle={screenGraph} className="graph">
+        <PaperContent>
+          <Flex align={"center"} mb={"16px"}>
+            <Text
+              fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+            >
+              Графиклар{" "}
+              <Text as={"span"} fontSize={scssVariables.fonts.parag}>
+                (бошланиш ва тугаш саналари)
+              </Text>
             </Text>
             <Tooltip label="Катта қилиш">
-            <Eye
-            onClick={() =>
-              screenTable.active
-              ? screenTable.exit()
-              : screenTable.enter()
-            }
-            cursor={"pointer"}
-            color="grey"
-            width={"22px"}
-            height={"22px"}
-            style={{ marginLeft: "auto" }}
-            />
+              <Eye
+                onClick={() =>
+                  screenGraph.active ? screenGraph.exit() : screenGraph.enter()
+                }
+                cursor={"pointer"}
+                color="grey"
+                width={"22px"}
+                height={"22px"}
+                style={{ marginLeft: "auto" }}
+              />
             </Tooltip>
+          </Flex>
+
+          <form onSubmit={handleSubmit1(searchGraph)} id="graph-form">
+            <SimpleGrid
+              columns={{ base: 1, sm: 2, md: 3, xl: 3 }}
+              alignItems={"center"}
+              gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
+            >
+              <Input
+                type="date"
+                aria-label="date-from"
+                id="date-from"
+                {...register1("date_from")}
+              />
+              <Input
+                type="date"
+                aria-label="date-to"
+                id="date-to"
+                {...register1("date_to")}
+              />
+              <Flex align={"center"} gap={"10px"} my={"8px"}>
+                <Button
+                  onClick={clearGraph}
+                  variant={"outline"}
+                  sx={{
+                    ...buttonStyle,
+                    bg: "transparent",
+                    color: scssVariables.primary,
+                    borderColor: scssVariables.primary,
+                    _hover: {
+                      bg: "transparent",
+                      opacity: 0.7,
+                    },
+                  }}
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
+                  Тозалаш
+                </Button>
+                <Button
+                  form="graph-form"
+                  type="submit"
+                  sx={buttonStyle}
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
+                  Қидириш
+                </Button>
+              </Flex>
+            </SimpleGrid>
+          </form>
+        </PaperContent>
+        <SimpleGrid
+          alignItems={"flex-start"}
+          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}
+        >
+          <PaperContent>
+            <Box w={"100%"} h={"fit-content"}>
+              <LineChart data={lineGraph} />
+              <ChartItemNamesList array={Array.from(lineGraph)} />
+            </Box>
+          </PaperContent>
+          <PaperContent>
+            <Box w={"100%"} h={"fit-content"}>
+              <BarChart data={barGraph} />
+              <ChartItemNamesList
+                array={Array.from(barGraph)}
+                sliceFrom={0}
+                sliceTo={10}
+              />
+            </Box>
+          </PaperContent>
+        </SimpleGrid>
+      </FullScreen>
+
+      {/* TABLE */}
+      <FullScreen handle={screenTable}>
+        <Box className="table">
+          <PaperContent>
+            <Flex align={"center"}>
+              <Text
+                fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+              >
+                Энг кўп мурожаатлар рўйхати:
+              </Text>
+              <Tooltip label="Катта қилиш">
+                <Eye
+                  onClick={() =>
+                    screenTable.active
+                      ? screenTable.exit()
+                      : screenTable.enter()
+                  }
+                  cursor={"pointer"}
+                  color="grey"
+                  width={"22px"}
+                  height={"22px"}
+                  style={{ marginLeft: "auto" }}
+                />
+              </Tooltip>
             </Flex>
             <Flex
-            my={"8px"}
-            alignItems={"flex-end"}
-            justifyContent={"space-between"}
-            gap={"8px"}
-            flexDirection={{
-              base: "column",
-              sm: "column",
-              md: "column",
-              xl: "row",
-            }}
+              my={"8px"}
+              alignItems={"flex-end"}
+              justifyContent={"space-between"}
+              gap={"8px"}
+              flexDirection={{
+                base: "column",
+                sm: "column",
+                md: "column",
+                xl: "row",
+              }}
             >
-            <form
-            id="dashboard-form"
-            onSubmit={handleSubmit(handleFinish)}
-            style={{ width: "100%" }}
-            >
-            <Flex
-            w={"100%"}
-            gap={"8px"}
-            alignItems={"flex-end"}
-            flexDirection={{
-              base: "column",
-              sm: "column",
-              md: "column",
-              xl: "row",
-            }}
-            >
-            <FormControl>
-            <FormLabel htmlFor="region" sx={labelStyle}>
-            Ҳудудлар
-            </FormLabel>
-            <AutocompleteSelect
-            name="region"
-            control={control}
-            options={[
-              { value: "null", label: "Барчаси" },
-              ...regions?.map((region: any) => ({
-                value: region.id,
-                label: firstLetterCapitalizer(region.title),
-              })),
-            ]}
-            />
-            </FormControl>
-            <FormControl>
-            <FormLabel htmlFor="categoryId" sx={labelStyle}>
-            Йўналиш:
-            </FormLabel>
-            <AutocompleteSelect
-            name="categoryId"
-            control={control}
-            options={[
-              { value: "null", label: "Барчаси" },
-              ...razdel?.map((field: any) => ({
-                value: field.id,
-                label: firstLetterCapitalizer(field.title),
-              })),
-            ]}
-            onChange={handleChangeRazdel}
-            />
-            </FormControl>
-            <FormControl>
-            <FormLabel htmlFor="subCategoryId" sx={labelStyle}>
-            Тасниф:
-            </FormLabel>
-            <AutocompleteSelect
-            name="subCategoryId"
-            control={control}
-            options={[
-              { value: "null", label: "Барчаси" },
-              ...podrazdel?.map((field: any) => ({
-                value: field.id,
-                label: firstLetterCapitalizer(field.title),
-              })),
-            ]}
-            />
-            </FormControl>
+              <form
+                id="dashboard-form"
+                onSubmit={handleSubmit(handleFinish)}
+                style={{ width: "100%" }}
+              >
+                <Flex
+                  w={"100%"}
+                  gap={"8px"}
+                  alignItems={"flex-end"}
+                  flexDirection={{
+                    base: "column",
+                    sm: "column",
+                    md: "column",
+                    xl: "row",
+                  }}
+                >
+                  <FormControl>
+                    <FormLabel htmlFor="region" sx={labelStyle}>
+                      Ҳудудлар
+                    </FormLabel>
+                    <AutocompleteSelect
+                      name="region"
+                      control={control}
+                      options={[
+                        { value: "null", label: "Барчаси" },
+                        ...regions?.map((region: any) => ({
+                          value: region.id,
+                          label: firstLetterCapitalizer(region.title),
+                        })),
+                      ]}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="categoryId" sx={labelStyle}>
+                      Йўналиш:
+                    </FormLabel>
+                    <AutocompleteSelect
+                      name="categoryId"
+                      control={control}
+                      options={[
+                        { value: "null", label: "Барчаси" },
+                        ...razdel?.map((field: any) => ({
+                          value: field.id,
+                          label: firstLetterCapitalizer(field.title),
+                        })),
+                      ]}
+                      onChange={handleChangeRazdel}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel htmlFor="subCategoryId" sx={labelStyle}>
+                      Тасниф:
+                    </FormLabel>
+                    <AutocompleteSelect
+                      name="subCategoryId"
+                      control={control}
+                      options={[
+                        { value: "null", label: "Барчаси" },
+                        ...podrazdel?.map((field: any) => ({
+                          value: field.id,
+                          label: firstLetterCapitalizer(field.title),
+                        })),
+                      ]}
+                    />
+                  </FormControl>
+                </Flex>
+              </form>
+              <Flex align={"center"} gap={"10px"}>
+                <Button
+                  onClick={handleClear}
+                  variant={"outline"}
+                  sx={{
+                    ...buttonStyle,
+                    bg: "transparent",
+                    color: scssVariables.primary,
+                    borderColor: scssVariables.primary,
+                    _hover: {
+                      bg: "transparent",
+                      opacity: 0.7,
+                    },
+                  }}
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
+                  Тозалаш
+                </Button>
+                <Button
+                  form="dashboard-form"
+                  type="submit"
+                  sx={buttonStyle}
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
+                  Қидириш
+                </Button>
+              </Flex>
             </Flex>
-            </form>
-            <Flex align={"center"} gap={"10px"}>
-            <Button
-            onClick={handleClear}
-            variant={"outline"}
-            sx={{
-              ...buttonStyle,
-              bg: "transparent",
-              color: scssVariables.primary,
-              borderColor: scssVariables.primary,
-              _hover: {
-                bg: "transparent",
-                opacity: 0.7,
-              },
-            }}
-            leftIcon={<X width={"18px"} height={"18px"} />}
-            >
-            Тозалаш
-            </Button>
-            <Button
-            form="dashboard-form"
-            type="submit"
-            sx={buttonStyle}
-            leftIcon={<Search width={"18px"} height={"18px"} />}
-            >
-            Қидириш
-            </Button>
-            </Flex>
-            </Flex>
-            </PaperContent>
-            <PaperContent>
+          </PaperContent>
+          <PaperContent>
             <Box w={"100%"} h={"auto"}>
-            <TableGen
-            ColBg="transparent"
-            RowBg="transparent"
-            boxShadow="none"
-            dataSource={tableData}
-            columns={Dashboardcolumns}
-            />
-            <Pagination
-            current={current}
-            pageSize={pageSize}
-            total={total}
-            onChange={() => null}
-            hideButtons
-            onPageSizeChange={handlePageSizeChange}
-            />
+              <TableGen
+                ColBg="transparent"
+                RowBg="transparent"
+                boxShadow="none"
+                dataSource={tableData}
+                columns={Dashboardcolumns}
+              />
+              <Pagination
+                current={current}
+                pageSize={pageSize}
+                total={total}
+                onChange={() => null}
+                hideButtons
+                onPageSizeChange={handlePageSizeChange}
+              />
             </Box>
-            </PaperContent>
-            </Box>
-          </FullScreen>
+          </PaperContent>
         </Box>
-      );
-    };
-    
+      </FullScreen>
+    </Box>
+  );
+};
