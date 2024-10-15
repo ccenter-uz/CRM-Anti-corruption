@@ -44,36 +44,29 @@ export const getcallcenterforExcel = async (columns: any, data: any) => {
       .filter((col: any) => col.title !== "")
       .map((col: any) => col.title);
 
-      const worksheetData = [
-        headers,
-        ...data.map((item: any) => [
-          item?.index,
-          item?.response_file,
-          item?.status,
-          item?.incoming_number,
-          item?.applicant,
-          item?.phone,
-          item?.email,
-          item?.street_and_apartment,
-          item?.districts?.region?.title,
-          item?.districts?.title,
-          item?.income_date || "маълумот йўқ",
-          item?.organization_type === "null"
-            ? "маълумот йўқ"
-            : item?.organization_type,
-          item?.application_type,
-          item?.sub_category_call_center?.title,
-          item?.comment,
-          item?.resend_application === "null"
-            ? "маълумот йўқ"
-            : item?.resend_application,
-          item?.performers?.title,
-          item?.perform_date || "маълумот йўқ",
-          item?.seded_to_Organization?.title,
-          item?.response === "null" ? "маълумот йўқ" : item?.response,
-          item?.response_story,
-        ]),
-      ];
+    const worksheetData = [
+      headers,
+      ...data.map((item: any) => [
+        item.index,
+        item.incoming_number,
+        item.districts?.region?.title,
+        item.districts?.title,
+        item.income_date,
+        item.organization_type,
+        item?.applicant,
+        item.phone,
+        item.application_type,
+        item.sub_category_call_center?.category_org?.title,
+        item.sub_category_call_center?.title,
+        item.comment,
+        item.resend_application,
+        item.organization_name,
+        item.performer,
+        item.perform_date,
+        item.sended_to_organizations,
+        item.response,
+      ]),
+    ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
     const workbook = XLSX.utils.book_new();
