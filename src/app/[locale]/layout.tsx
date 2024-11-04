@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Anticorp",
-  description: "CRM-for anticorruption",
+  title: "Antikorrupsiya",
+  description: "korrupsiyaga qarshi kurashish agentligi aloqa markazi",
 };
 
 const RootLayout = ({
