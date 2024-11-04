@@ -15,6 +15,11 @@ import { getcallcenterforExcel } from "../api/getExcel";
 import { FilterTable } from "@/@core/features/FilterTable";
 import { callcenterColumns } from "@/@core/application/helper/callCenterColumns";
 
+interface IChangeRegionParams {
+  value: string;  
+  label: string;
+}
+
 export const Drafts: FC = () => {
   const breadcrumb = [
     {
@@ -160,12 +165,11 @@ export const Drafts: FC = () => {
       data?.status === 200 && setPodrazdel(data?.data.results);
     }
   };
-
-  const handleChangeRegion = async (e: ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value === "null") {
+  const handleChangeRegion = async (e: IChangeRegionParams) => {
+    if (e.value === "null") {
       await getDistrict();
     } else {
-      const data = await getDistrictByRegionId(e.target.value);
+      const data = await getDistrictByRegionId(e.value);
       data?.status === 200 &&
         setDistrict(
           data?.results.map((d: any, index: number) => ({
