@@ -7,6 +7,7 @@ export const postChangeRazdel = async (id: number | string) => {
         page: 1,
         pageSize: 1000000,
         search: "null",
+        type: "0",
       },
     });
 
@@ -25,7 +26,7 @@ export const getDataWithRegion = async (params: {
   try {
     const response = await api.get(
       "/SectionCategories/Allstatistics/filterWithRegion",
-      { params: params }
+      { params: {...params, type: "0"}, }
     );
 
     return response;
@@ -38,7 +39,11 @@ export const getDataWithRegion = async (params: {
 export const getWarning = async () => {
   try {
     const response = await api.get(
-      "/SectionCategories/AllstatisticsWithRegion"
+      "/SectionCategories/AllstatisticsWithRegion", {
+        params: {
+          type: "0",
+        },
+      }
     );
 
     return response;
@@ -57,7 +62,7 @@ export const getTableData = async (params: {
 }) => {
   try {
     const response = await api.get("/SectionCategories/statistics/filter", {
-      params: params,
+      params: {...params, type: "0"},
     });
 
     return response;
@@ -70,7 +75,7 @@ export const getTableData = async (params: {
 export const getLineGraph = async (query?: any) => {
   try {
     const response = await api.get("/SectionCategories/statisticsWithRegion", {
-      params: query,
+      params: {...query, type: "0"},
     });
 
     return response;
@@ -85,7 +90,7 @@ export const getBarGraph = async (query?:any) => {
     const response = await api.get(
       "/SectionCategories/statisticsWithCategory",
       {
-        params: query,
+        params: {...query, type: "0"},
       }
     );
 

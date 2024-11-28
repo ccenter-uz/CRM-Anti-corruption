@@ -1,12 +1,6 @@
-import { DashboardAsync } from "@/@core/pages/Dashboard";
-import { FC } from "react";
+import { redirect } from "next/navigation";
 
-const Dashboard: FC = () => {
-  return (
-    <>
-      <DashboardAsync />
-    </>
-  );
+const DashboardHome = () => {
+  redirect("/dashboard/requests");
 };
-
-export default Dashboard;
+export default DashboardHome;
