@@ -13,8 +13,6 @@ import {
   Input,
   List,
   ListItem,
-  RadioGroup,
-  Radio,
 } from "@chakra-ui/react";
 import { TriangleDownIcon } from "@chakra-ui/icons";
 import { FormControl, FormLabel } from "@chakra-ui/react";
@@ -24,14 +22,7 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import {
-  Check,
-  Eye,
-  EyeOff,
-  Search,
-  X,
-  Icon,
-} from "react-feather";
+import { Check, Eye, EyeOff, Search, X, Icon } from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -44,7 +35,7 @@ import {
   postChangeRazdel,
 } from "../api";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDashboardSlicer } from "../model/Slicer";
+import { useDashboardDraftSlicer } from "../model/Slicer";
 import { BarChart } from "./BarChart";
 import { LineChart } from "./LineGraph";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
@@ -98,7 +89,7 @@ export const DraftsDashboard: FC<any> = (props) => {
     formState: { errors: errors1 },
   } = useForm();
   const { id, dataWithRegion, setDataWithRegion, tableData, setTableData } =
-    useDashboardSlicer();
+    useDashboardDraftSlicer();
   const screenMap = useFullScreenHandle();
   const screenGraph = useFullScreenHandle();
   const screenTable = useFullScreenHandle();
@@ -291,20 +282,23 @@ export const DraftsDashboard: FC<any> = (props) => {
       <SimpleGrid
         columns={{ base: 1, sm: 1, md: 1, xl: 1 }}
         p={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-        gap={"8px"}>
+        gap={"8px"}
+      >
         <List
           height={150}
           display={"flex"}
           flexDirection={"column"}
           flexWrap={"wrap"}
           alignItems={"space-between"}
-          overflow="auto">
+          overflow="auto"
+        >
           {initialArray?.map((item: any, index: number) => (
             <ListItem
               width={350}
               key={item.id}
               fontSize={scssVariables.fonts.span}
-              color={scssVariables.textGreyColor}>
+              color={scssVariables.textGreyColor}
+            >
               {index + 1}. {firstLetterCapitalizer(item?.title)}
             </ListItem>
           ))}
@@ -324,7 +318,8 @@ export const DraftsDashboard: FC<any> = (props) => {
         p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
         h={"auto"}
         bg={bgColor}
-        color={"white"}>
+        color={"white"}
+      >
         <HStack
           flexDirection={{
             base: "column",
@@ -334,7 +329,8 @@ export const DraftsDashboard: FC<any> = (props) => {
           }}
           alignItems={"center"}
           justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}>
+          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
+        >
           {icon}
           <Text
             fontSize={{
@@ -342,7 +338,8 @@ export const DraftsDashboard: FC<any> = (props) => {
               sm: "14px",
               md: "18px",
               xl: "18px",
-            }}>
+            }}
+          >
             {title}:
           </Text>
           <Text fontWeight={600} fontSize={scssVariables.fonts.titleSize}>
@@ -387,7 +384,6 @@ export const DraftsDashboard: FC<any> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
-
   // Consts
   const statBoxArrayDrafts: Array<StatItemInterface> = [
     {
@@ -412,7 +408,8 @@ export const DraftsDashboard: FC<any> = (props) => {
 
   return (
     <Box
-      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}>
+      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
+    >
       {/* BREADCRUMB */}
       <Flex className="breadcrumb" justifyContent={"flex-end"}>
         <BreadCrumb item={breadcrumbs} />
@@ -427,7 +424,8 @@ export const DraftsDashboard: FC<any> = (props) => {
           <SimpleGrid
             columns={{ base: 1, sm: 2, md: 2, xl: 4 }}
             my={"8px"}
-            gap={"8px"}>
+            gap={"8px"}
+          >
             {statBoxArrayDrafts.map((item) => (
               <StatBox
                 key={item.title}
@@ -460,14 +458,16 @@ export const DraftsDashboard: FC<any> = (props) => {
                 sm: "column",
                 md: "column",
                 xl: "row",
-              }}>
+              }}
+            >
               <Box
                 flex={0.8}
                 h={"auto"}
                 mx={"auto"}
                 display={"flex"}
-                justifyContent={"center"}>
-                <UzbMap />
+                justifyContent={"center"}
+              >
+                <UzbMap isDraft={true} />
               </Box>
             </Flex>
           </PaperContent>
@@ -479,7 +479,8 @@ export const DraftsDashboard: FC<any> = (props) => {
         <PaperContent>
           <Flex align={"center"} mb={"16px"}>
             <Text
-              fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
+              fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+            >
               Графиклар{" "}
               <Text as={"span"} fontSize={scssVariables.fonts.parag}>
                 (бошланиш ва тугаш саналари)
@@ -503,7 +504,8 @@ export const DraftsDashboard: FC<any> = (props) => {
             <SimpleGrid
               columns={{ base: 1, sm: 2, md: 3, xl: 3 }}
               alignItems={"center"}
-              gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}>
+              gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
+            >
               <Input
                 type="date"
                 aria-label="date-from"
@@ -530,14 +532,16 @@ export const DraftsDashboard: FC<any> = (props) => {
                       opacity: 0.7,
                     },
                   }}
-                  leftIcon={<X width={"18px"} height={"18px"} />}>
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
                   Тозалаш
                 </Button>
                 <Button
                   form="graph-form"
                   type="submit"
                   sx={buttonStyle}
-                  leftIcon={<Search width={"18px"} height={"18px"} />}>
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
                   Қидириш
                 </Button>
               </Flex>
@@ -546,7 +550,8 @@ export const DraftsDashboard: FC<any> = (props) => {
         </PaperContent>
         <SimpleGrid
           alignItems={"flex-start"}
-          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}>
+          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}
+        >
           <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
               <LineChart data={lineGraph} />
@@ -572,7 +577,8 @@ export const DraftsDashboard: FC<any> = (props) => {
           <PaperContent>
             <Flex align={"center"}>
               <Text
-                fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
+                fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+              >
                 Энг кўп мурожаатлар рўйхати:
               </Text>
               <Tooltip label="Катта қилиш">
@@ -600,11 +606,13 @@ export const DraftsDashboard: FC<any> = (props) => {
                 sm: "column",
                 md: "column",
                 xl: "row",
-              }}>
+              }}
+            >
               <form
                 id="dashboard-form"
                 onSubmit={handleSubmit(handleFinish)}
-                style={{ width: "100%" }}>
+                style={{ width: "100%" }}
+              >
                 <Flex
                   w={"100%"}
                   gap={"8px"}
@@ -614,7 +622,8 @@ export const DraftsDashboard: FC<any> = (props) => {
                     sm: "column",
                     md: "column",
                     xl: "row",
-                  }}>
+                  }}
+                >
                   <FormControl>
                     <FormLabel htmlFor="region" sx={labelStyle}>
                       Ҳудудлар
@@ -680,14 +689,16 @@ export const DraftsDashboard: FC<any> = (props) => {
                       opacity: 0.7,
                     },
                   }}
-                  leftIcon={<X width={"18px"} height={"18px"} />}>
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
                   Тозалаш
                 </Button>
                 <Button
                   form="dashboard-form"
                   type="submit"
                   sx={buttonStyle}
-                  leftIcon={<Search width={"18px"} height={"18px"} />}>
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
                   Қидириш
                 </Button>
               </Flex>
