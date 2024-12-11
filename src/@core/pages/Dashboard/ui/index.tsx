@@ -300,20 +300,23 @@ export const Dashboard: FC<any> = (props) => {
       <SimpleGrid
         columns={{ base: 1, sm: 1, md: 1, xl: 1 }}
         p={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
-        gap={"8px"}>
+        gap={"8px"}
+      >
         <List
           height={150}
           display={"flex"}
           flexDirection={"column"}
           flexWrap={"wrap"}
           alignItems={"space-between"}
-          overflow="auto">
+          overflow="auto"
+        >
           {initialArray?.map((item: any, index: number) => (
             <ListItem
               width={350}
               key={item.id}
               fontSize={scssVariables.fonts.span}
-              color={scssVariables.textGreyColor}>
+              color={scssVariables.textGreyColor}
+            >
               {index + 1}. {firstLetterCapitalizer(item?.title)}
             </ListItem>
           ))}
@@ -333,7 +336,8 @@ export const Dashboard: FC<any> = (props) => {
         p={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
         h={"auto"}
         bg={bgColor}
-        color={"white"}>
+        color={"white"}
+      >
         <HStack
           flexDirection={{
             base: "column",
@@ -343,7 +347,8 @@ export const Dashboard: FC<any> = (props) => {
           }}
           alignItems={"center"}
           justify={"center"}
-          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}>
+          gap={{ base: "5px", sm: "5px", md: "10px", xl: "10px" }}
+        >
           {icon}
           <Text
             fontSize={{
@@ -351,7 +356,8 @@ export const Dashboard: FC<any> = (props) => {
               sm: "14px",
               md: "18px",
               xl: "18px",
-            }}>
+            }}
+          >
             {title}:
           </Text>
           <Text fontWeight={600} fontSize={scssVariables.fonts.titleSize}>
@@ -438,7 +444,8 @@ export const Dashboard: FC<any> = (props) => {
 
   return (
     <Box
-      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}>
+      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
+    >
       {/* BREADCRUMB */}
       <Flex className="breadcrumb" justifyContent={"flex-end"}>
         <BreadCrumb item={breadcrumbs} />
@@ -453,7 +460,8 @@ export const Dashboard: FC<any> = (props) => {
           <SimpleGrid
             columns={{ base: 1, sm: 2, md: 2, xl: 4 }}
             my={"8px"}
-            gap={"8px"}>
+            gap={"8px"}
+          >
             {statBoxArray.map((item) => (
               <StatBox
                 key={item.title}
@@ -486,13 +494,15 @@ export const Dashboard: FC<any> = (props) => {
                 sm: "column",
                 md: "column",
                 xl: "row",
-              }}>
+              }}
+            >
               <Box
                 flex={0.8}
                 h={"auto"}
                 mx={"auto"}
                 display={"flex"}
-                justifyContent={"center"}>
+                justifyContent={"center"}
+              >
                 <UzbMap />
               </Box>
             </Flex>
@@ -505,7 +515,8 @@ export const Dashboard: FC<any> = (props) => {
         <PaperContent>
           <Flex align={"center"} mb={"16px"}>
             <Text
-              fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
+              fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+            >
               Графиклар{" "}
               <Text as={"span"} fontSize={scssVariables.fonts.parag}>
                 (бошланиш ва тугаш саналари)
@@ -529,7 +540,8 @@ export const Dashboard: FC<any> = (props) => {
             <SimpleGrid
               columns={{ base: 1, sm: 2, md: 3, xl: 3 }}
               alignItems={"center"}
-              gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}>
+              gap={{ base: "10px", sm: "10px", md: "20px", xl: "20px" }}
+            >
               <Input
                 type="date"
                 aria-label="date-from"
@@ -556,14 +568,16 @@ export const Dashboard: FC<any> = (props) => {
                       opacity: 0.7,
                     },
                   }}
-                  leftIcon={<X width={"18px"} height={"18px"} />}>
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
                   Тозалаш
                 </Button>
                 <Button
                   form="graph-form"
                   type="submit"
                   sx={buttonStyle}
-                  leftIcon={<Search width={"18px"} height={"18px"} />}>
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
                   Қидириш
                 </Button>
               </Flex>
@@ -572,7 +586,8 @@ export const Dashboard: FC<any> = (props) => {
         </PaperContent>
         <SimpleGrid
           alignItems={"flex-start"}
-          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}>
+          columns={{ base: 1, sm: 1, md: 2, xl: 2 }}
+        >
           <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
               <LineChart data={lineGraph} />
@@ -598,7 +613,8 @@ export const Dashboard: FC<any> = (props) => {
           <PaperContent>
             <Flex align={"center"}>
               <Text
-                fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
+                fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+              >
                 Энг кўп мурожаатлар рўйхати:
               </Text>
               <Tooltip label="Катта қилиш">
@@ -626,11 +642,13 @@ export const Dashboard: FC<any> = (props) => {
                 sm: "column",
                 md: "column",
                 xl: "row",
-              }}>
+              }}
+            >
               <form
                 id="dashboard-form"
                 onSubmit={handleSubmit(handleFinish)}
-                style={{ width: "100%" }}>
+                style={{ width: "100%" }}
+              >
                 <Flex
                   w={"100%"}
                   gap={"8px"}
@@ -640,7 +658,8 @@ export const Dashboard: FC<any> = (props) => {
                     sm: "column",
                     md: "column",
                     xl: "row",
-                  }}>
+                  }}
+                >
                   <FormControl>
                     <FormLabel htmlFor="region" sx={labelStyle}>
                       Ҳудудлар
@@ -706,14 +725,16 @@ export const Dashboard: FC<any> = (props) => {
                       opacity: 0.7,
                     },
                   }}
-                  leftIcon={<X width={"18px"} height={"18px"} />}>
+                  leftIcon={<X width={"18px"} height={"18px"} />}
+                >
                   Тозалаш
                 </Button>
                 <Button
                   form="dashboard-form"
                   type="submit"
                   sx={buttonStyle}
-                  leftIcon={<Search width={"18px"} height={"18px"} />}>
+                  leftIcon={<Search width={"18px"} height={"18px"} />}
+                >
                   Қидириш
                 </Button>
               </Flex>

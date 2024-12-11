@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const DashboardSlicer = create((set) => ({
+const DashboardDraftSlicer = create((set) => ({
   id: null,
   setId: (id: string | number) => set({ id }),
   dataWithRegion: null,
@@ -9,15 +9,17 @@ const DashboardSlicer = create((set) => ({
   setTableData: (tableData: any) => set({ tableData }),
 }));
 
-export const useDashboardSlicer = () => {
-  const id = DashboardSlicer((state: any) => state.id);
-  const setId = DashboardSlicer((state: any) => state.setId);
-  const dataWithRegion = DashboardSlicer((state: any) => state.dataWithRegion);
-  const setDataWithRegion = DashboardSlicer(
+export const useDashboardDraftSlicer = () => {
+  const id = DashboardDraftSlicer((state: any) => state.id);
+  const setId = DashboardDraftSlicer((state: any) => state.setId);
+  const dataWithRegion = DashboardDraftSlicer(
+    (state: any) => state.dataWithRegion
+  );
+  const setDataWithRegion = DashboardDraftSlicer(
     (state: any) => state.setDataWithRegion
   );
-  const tableData = DashboardSlicer((state: any) => state.tableData);
-  const setTableData = DashboardSlicer((state: any) => state.setTableData);
+  const tableData = DashboardDraftSlicer((state: any) => state.tableData);
+  const setTableData = DashboardDraftSlicer((state: any) => state.setTableData);
 
   return {
     id,
