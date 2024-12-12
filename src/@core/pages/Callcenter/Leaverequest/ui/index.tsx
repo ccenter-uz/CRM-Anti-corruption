@@ -22,7 +22,7 @@ import {
   resend_applicationList,
   responseList,
   selectStyle,
-  statusList
+  statusList,
 } from "../model/helper";
 import { Controller, useForm } from "react-hook-form";
 import { useGlobal } from "@/@core/application/store/global";
@@ -81,6 +81,9 @@ export const Leaverequest = () => {
   } = useForm();
   const router = useRouter();
   const [data, setData] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [loadingDraft, setLoadingDraft] = useState(false);
 
   // BTNS
   const handleButtons = useCallback(() => {
@@ -91,13 +94,12 @@ export const Leaverequest = () => {
             w={"100%"}
             display={"flex"}
             justifyContent={"flex-end"}
-            gap={"8px"}
-          >
+            gap={"8px"}>
             <Button
               id="save"
               sx={buttonStyle}
               onClick={handleSubmit(handleEdit)}
-            >
+              isLoading={loadingEdit}>
               Сақлаш
             </Button>
           </Box>
@@ -108,8 +110,7 @@ export const Leaverequest = () => {
             w={"100%"}
             display={"flex"}
             justifyContent={"flex-end"}
-            gap={"8px"}
-          >
+            gap={"8px"}>
             <Button
               id="draft"
               sx={{
@@ -120,15 +121,15 @@ export const Leaverequest = () => {
                 _hover: { bgColor: "transparent" },
               }}
               onClick={handleSubmit(handleEditDraft)}
-              variant={"outline"}
-            >
+              isLoading={loadingDraft}
+              variant={"outline"}>
               Қоралама сақлаш
             </Button>
             <Button
               id="save"
               sx={buttonStyle}
-              onClick={handleSubmit(handleEdit)}
-            >
+              isLoading={loadingEdit}
+              onClick={handleSubmit(handleEdit)}>
               Сақлаш
             </Button>
           </Box>
@@ -140,8 +141,7 @@ export const Leaverequest = () => {
           w={"100%"}
           display={"flex"}
           justifyContent={"flex-end"}
-          gap={"8px"}
-        >
+          gap={"8px"}>
           <Button
             id="draft"
             sx={{
@@ -152,15 +152,15 @@ export const Leaverequest = () => {
               _hover: { bgColor: "transparent" },
             }}
             onClick={handleSubmit(handleCreateDraft)}
-            variant={"outline"}
-          >
+            isLoading={loadingDraft}
+            variant={"outline"}>
             Қоралама сақлаш
           </Button>
           <Button
             id="save"
             sx={buttonStyle}
             onClick={handleSubmit(handleCreate)}
-          >
+            isLoading={loading}>
             Сақлаш
           </Button>
         </Box>
@@ -168,26 +168,32 @@ export const Leaverequest = () => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, params]);
+  }, [data, params, loading, loadingEdit, loadingDraft]);
 
   // CREATE
   const handleCreate = async (values: any) => {
+    setLoading(true);
     const data = await create({ ...values, IsDraf: "false" });
     data?.status === 201 &&
       (toast.success("Success", { position: "bottom-right" }),
       reset(),
-      router.push("/callcenter/requests"));
+      router.push("/callcenter/requests"),
+      setLoading(false));
   };
   // CREATE-DRAFT
   const handleCreateDraft = async (values: any) => {
+    setLoadingDraft(true);
     const data = await createDraft({ ...values, IsDraf: "true" });
     data?.status === 201 &&
-      (toast.success("Success", { position: "bottom-right" }),
-      reset(),
-      router.push("/callcenter/drafts"));
+    (toast.success("Success", { position: "bottom-right" }),
+    reset(),
+    setLoadingDraft(false),
+    router.push("/callcenter/drafts")
+  );
   };
   // EDIT
   const handleEdit = async (values: any) => {
+    setLoadingEdit(true);
     const data = await edit(
       { ...values, IsDraf: "false" },
       params.get("edit") as string
@@ -195,10 +201,13 @@ export const Leaverequest = () => {
     data?.status === 204 &&
       (toast.success("Success", { position: "bottom-right" }),
       reset(),
-      router.push("/callcenter/requests"));
+      setLoadingEdit(false),
+      router.push("/callcenter/requests")
+    );
   };
   // EDIT-DRAFT
   const handleEditDraft = async (values: any) => {
+    setLoadingDraft(true);
     const data = await editDraft(
       { ...values, IsDraf: "true" },
       params.get("edit") as string
@@ -206,6 +215,7 @@ export const Leaverequest = () => {
     data?.status === 204 &&
       (toast.success("Success", { position: "bottom-right" }),
       reset(),
+      setLoadingDraft(false),
       router.push("/callcenter/drafts"));
   };
 
@@ -297,8 +307,7 @@ export const Leaverequest = () => {
 
   return (
     <Box
-      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
-    >
+      p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}>
       <BreadCrumb item={breadcrumb} />
       <PaperContent>
         <Text
@@ -306,8 +315,7 @@ export const Leaverequest = () => {
           my={{ base: "8px", sm: "8px", md: "16px", xl: "16px" }}
           fontWeight={500}
           color={scssVariables.textGreyColor}
-          fontSize={scssVariables.fonts.titleSize}
-        >
+          fontSize={scssVariables.fonts.titleSize}>
           {params.get("edit") ? "Мурожаатни тахрирлаш" : "Мурожаат яратиш"}
         </Text>
         <Box p={{ base: "5px", sm: "5px", md: "16px", xl: " 16px" }}>
@@ -333,8 +341,7 @@ export const Leaverequest = () => {
 
               <FormErrorMessage
                 color={"red.300"}
-                fontSize={scssVariables.fonts.span}
-              >
+                fontSize={scssVariables.fonts.span}>
                 мажбурий катак
               </FormErrorMessage>
             </FormControl>
@@ -357,8 +364,7 @@ export const Leaverequest = () => {
 
               <FormErrorMessage
                 color={"red.300"}
-                fontSize={scssVariables.fonts.span}
-              >
+                fontSize={scssVariables.fonts.span}>
                 мажбурий катак
               </FormErrorMessage>
             </FormControl>
@@ -380,14 +386,12 @@ export const Leaverequest = () => {
               <Select
                 sx={selectStyle}
                 id="organization_type"
-                {...register("organization_type")}
-              >
+                {...register("organization_type")}>
                 <option value={"null"}>Танланг</option>
                 {organizationTypeList.map((organizationType) => (
                   <option
                     key={organizationType.id}
-                    value={organizationType.label}
-                  >
+                    value={organizationType.label}>
                     {organizationType.label}
                   </option>
                 ))}
@@ -432,14 +436,12 @@ export const Leaverequest = () => {
               <Select
                 sx={selectStyle}
                 id="application_type"
-                {...register("application_type")}
-              >
+                {...register("application_type")}>
                 <option value={"null"}>Танланг</option>
                 {applicationTypeList.map((applicationType) => (
                   <option
                     key={applicationType.id}
-                    value={applicationType.label}
-                  >
+                    value={applicationType.label}>
                     {applicationType.label}
                   </option>
                 ))}
@@ -464,8 +466,7 @@ export const Leaverequest = () => {
               />
               <FormErrorMessage
                 color={"red.300"}
-                fontSize={scssVariables.fonts.span}
-              >
+                fontSize={scssVariables.fonts.span}>
                 мажбурий катак
               </FormErrorMessage>
             </FormControl>
@@ -487,8 +488,7 @@ export const Leaverequest = () => {
               />
               <FormErrorMessage
                 color={"red.300"}
-                fontSize={scssVariables.fonts.span}
-              >
+                fontSize={scssVariables.fonts.span}>
                 мажбурий катак
               </FormErrorMessage>
             </FormControl>
@@ -505,14 +505,12 @@ export const Leaverequest = () => {
               <Select
                 sx={selectStyle}
                 id="resend_application"
-                {...register("resend_application")}
-              >
+                {...register("resend_application")}>
                 <option value={"null"}>Танланг</option>
                 {resend_applicationList.map((resend_application) => (
                   <option
                     key={resend_application.id}
-                    value={resend_application.label}
-                  >
+                    value={resend_application.label}>
                     {resend_application.label}
                   </option>
                 ))}
@@ -557,17 +555,20 @@ export const Leaverequest = () => {
               />
             </FormControl>
             <FormControl>
-                <FormLabel htmlFor="status" sx={labelStyle}>
-                  Мурожаат холати
-                </FormLabel>
-                <Select sx={selectStyle} id="inProcces" {...register("inProcces")}>
-                  {statusList.map((status) => (
-                    <option key={status.id} value={status.label}>
-                      {status.label}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
+              <FormLabel htmlFor="status" sx={labelStyle}>
+                Мурожаат холати
+              </FormLabel>
+              <Select
+                sx={selectStyle}
+                id="inProcces"
+                {...register("inProcces")}>
+                {statusList.map((status) => (
+                  <option key={status.id} value={status.label}>
+                    {status.label}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
             <FormControl>
               <FormLabel htmlFor="response" sx={labelStyle}>
                 Мурожаатни жавоби
