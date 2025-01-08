@@ -191,7 +191,7 @@ export const Requests: FC = () => {
             color={scssVariables.textGreyColor}
             fontSize={{ base: "18px", sm: "18px", md: "24px", xl: "24px" }}
           >
-            Мурожаатлар руйхати: Колл-центр
+            {params.get("from_year")} - Мурожаатлар руйхати: Колл-центр
           </Text>
           <Button
             leftIcon={

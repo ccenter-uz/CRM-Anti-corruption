@@ -72,15 +72,33 @@ export const FilterTable: FC<Props> = (props) => {
       region: "null",
       categoryId: "null",
       subCategoryId: "null",
-      date_from: "null",
-      date_to: "null",
       response: "null",
       operators: "null",
       applicant: "",
-      from_year: "null",
+      from_year: dayjs().year(),
+      date_from: dayjs()
+        .date(1)
+        .month(0)
+        .year(dayjs().year() as number)
+        .format("YYYY-MM-DD"),
+      date_to: dayjs()
+        .date(31)
+        .month(11)
+        .year(dayjs().year() as number)
+        .format("YYYY-MM-DD"),
     });
     await Promise.all([getPodrazdel(), getDistrict()]);
-    router.push(`?page=1&pageSize=10`);
+    router.push(
+      `?page=1&pageSize=10&operators=null&applicant=null&response=null&income_number=null&region=null&district=null&categoryId=null&subCategoryId=null&from_year=${dayjs().year()}&date_from=${dayjs()
+        .date(1)
+        .month(0)
+        .year(dayjs().year() as number)
+        .format("YYYY-MM-DD")}&date_to=${dayjs()
+        .date(31)
+        .month(11)
+        .year(dayjs().year() as number)
+        .format("YYYY-MM-DD")}`
+    );
   };
 
   useEffect(() => {
@@ -111,6 +129,31 @@ export const FilterTable: FC<Props> = (props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
+
+  useEffect(() => {
+    router.push(
+      `?page=${params.get("page") || 1}&pageSize=${
+        params.get("pageSize") || 10
+      }&applicant=${params.get("applicant")}&operators=${params.get(
+        "operators"
+      )}&response=${params.get("response")}&income_number=${params.get(
+        "income_number"
+      )}&region=${params.get("region")}&district=${params.get(
+        "district"
+      )}&categoryId=${params.get("categoryId")}&subCategoryId=${params.get(
+        "subCategoryId"
+      )}&from_year=${year}&date_from=${dayjs()
+        .date(1)
+        .month(0)
+        .year(year as number)
+        .format("YYYY-MM-DD")}&date_to=${dayjs()
+        .date(31)
+        .month(11)
+        .year(year as number)
+        .format("YYYY-MM-DD")}`
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(handleFinish)} id="filter-callcenter">

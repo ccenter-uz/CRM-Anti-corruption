@@ -345,7 +345,7 @@ export const Dashboard: FC<any> = (props) => {
             fontSize={14}
             onClick={() => setIsInitalArray(!isInitalArray)}
           >
-            {initialArray ? "Камроқ" : "Кўпроқ"}
+            {isInitalArray ? "Камроқ" : "Кўпроқ"}
           </Button>
         )}
       </SimpleGrid>
