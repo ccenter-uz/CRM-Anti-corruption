@@ -4,8 +4,22 @@ export const adminlinks = [
   {
     id: 0,
     title: "Дашборд",
-    href: "/dashboard",
+    href: "#",
     icon: Database,
+    subMenu: [
+      {
+        id: 0,
+        title: "Дашборд (Мурожаатлар)",
+        href: "/dashboard/requests",
+        icon: Database,
+      },
+      {
+        id: 0,
+        title: "Дашборд (Қораламалар)",
+        href: "/dashboard/drafts",
+        icon: Database,
+      },
+    ],
   },
   {
     id: 1,

@@ -3,10 +3,17 @@ import { Box, Tooltip } from "@chakra-ui/react";
 import { regionsId } from "@/@core/entity/utils/regionsId";
 import { useDashboardSlicer } from "@/@core/pages/Dashboard/model/Slicer";
 import { getWarning } from "@/@core/pages/Dashboard/api";
+import { useDashboardDraftSlicer } from "@/@core/pages/DraftsDashboard/model/Slicer";
 
-export const UzbMap: FC = () => {
+interface Props {
+  isDraft?: boolean;
+}
+
+export const UzbMap: FC<Props> = (props) => {
+  const { isDraft = false } = props;
   const svgRef = useRef<any>();
   const { setId, id } = useDashboardSlicer();
+  const { setId: setIdDraft, id: draftId } = useDashboardDraftSlicer();
 
   // handleColor
   const handleColor = useCallback((e: any) => {
@@ -25,17 +32,33 @@ export const UzbMap: FC = () => {
 
   // handleClickColor
   const handleClickColor = useCallback((e: ChangeEvent<any>) => {
-    if (!e.target?.id) setId(null);
+    if (!isDraft) {
+      if (!e.target?.id) setId(null);
 
-    for (let i = 0; i < svgRef.current?.children.length; i++) {
-      if (svgRef.current?.children[i].classList.contains("activeColorMap")) {
-        svgRef.current?.children[i].classList.remove("activeColorMap");
-        if (svgRef.current?.children[i]?.id === e.target?.id) {
-          setId(null);
+      for (let i = 0; i < svgRef.current?.children.length; i++) {
+        if (svgRef.current?.children[i].classList.contains("activeColorMap")) {
+          svgRef.current?.children[i].classList.remove("activeColorMap");
+          if (svgRef.current?.children[i]?.id === e.target?.id) {
+            setId(null);
+          }
+        } else if (svgRef.current?.children[i]?.id === e.target?.id) {
+          svgRef.current?.children[i].classList.add("activeColorMap");
+          setId(svgRef.current?.children[i]?.id);
         }
-      } else if (svgRef.current?.children[i]?.id === e.target?.id) {
-        svgRef.current?.children[i].classList.add("activeColorMap");
-        setId(svgRef.current?.children[i]?.id);
+      }
+    } else {
+      if (!e.target?.id) setIdDraft(null);
+
+      for (let i = 0; i < svgRef.current?.children.length; i++) {
+        if (svgRef.current?.children[i].classList.contains("activeColorMap")) {
+          svgRef.current?.children[i].classList.remove("activeColorMap");
+          if (svgRef.current?.children[i]?.id === e.target?.id) {
+            setIdDraft(null);
+          }
+        } else if (svgRef.current?.children[i]?.id === e.target?.id) {
+          svgRef.current?.children[i].classList.add("activeColorMap");
+          setIdDraft(svgRef.current?.children[i]?.id);
+        }
       }
     }
 

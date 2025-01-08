@@ -33,6 +33,7 @@ import {
   X,
   Clock,
   Icon,
+  MoreVertical,
 } from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
@@ -67,6 +68,7 @@ interface ChartItemNameInterface {
   array: any;
   sliceFrom?: number;
   sliceTo?: number;
+  more?: boolean;
 }
 
 export const Dashboard: FC<any> = (props) => {
@@ -82,6 +84,7 @@ export const Dashboard: FC<any> = (props) => {
   ];
   const params = useSearchParams();
   const router = useRouter();
+  const [isInitalArray, setIsInitalArray] = useState<boolean>(false);
   const { current, pageSize, total, setTotal } = usePagination();
   const {
     razdel,
@@ -291,6 +294,7 @@ export const Dashboard: FC<any> = (props) => {
     array,
     sliceFrom,
     sliceTo,
+    more,
   }: ChartItemNameInterface) => {
     const initialArray = ![sliceFrom, sliceTo].includes(undefined)
       ? array?.slice(sliceFrom, sliceTo)
@@ -310,17 +314,40 @@ export const Dashboard: FC<any> = (props) => {
           alignItems={"space-between"}
           overflow="auto"
         >
-          {initialArray?.map((item: any, index: number) => (
-            <ListItem
-              width={350}
-              key={item.id}
-              fontSize={scssVariables.fonts.span}
-              color={scssVariables.textGreyColor}
-            >
-              {index + 1}. {firstLetterCapitalizer(item?.title)}
-            </ListItem>
-          ))}
+          {isInitalArray
+            ? array?.map((item: any, index: number) => (
+                <ListItem
+                  width={350}
+                  key={item.id}
+                  fontSize={scssVariables.fonts.span}
+                  color={scssVariables.textGreyColor}
+                >
+                  {index + 1}. {firstLetterCapitalizer(item?.title)}
+                </ListItem>
+              ))
+            : initialArray?.map((item: any, index: number) => (
+                <ListItem
+                  width={350}
+                  key={item.id}
+                  fontSize={scssVariables.fonts.span}
+                  color={scssVariables.textGreyColor}
+                >
+                  {index + 1}. {firstLetterCapitalizer(item?.title)}
+                </ListItem>
+              ))}
         </List>
+        {more && (
+          <Button
+            w={"fit-content"}
+            ml={"auto"}
+            variant={"outline"}
+            leftIcon={<MoreVertical size={16} />}
+            fontSize={14}
+            onClick={() => setIsInitalArray(!isInitalArray)}
+          >
+            {initialArray ? "Камроқ" : "Кўпроқ"}
+          </Button>
+        )}
       </SimpleGrid>
     );
   };
@@ -402,10 +429,6 @@ export const Dashboard: FC<any> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
-  const onChangeType = (value: string) => {
-    setType(value);
-  };
-
   // Consts
   const statBoxArray: Array<StatItemInterface> = [
     {
@@ -445,26 +468,6 @@ export const Dashboard: FC<any> = (props) => {
       icon: <EyeOff width={"22px"} height={"22px"} />,
     },
   ];
-  const statBoxArrayDrafts: Array<StatItemInterface> = [
-    {
-      bgColor: "#4535C1",
-      title: "Жами мурожаатлар",
-      statNumber: dataWithRegion?.Applicationcount,
-      icon: <TriangleDownIcon width={"22px"} height={"22px"} />,
-    },
-    {
-      bgColor: "#478CCF",
-      title: "Тушунтирилганлар",
-      statNumber: dataWithRegion?.ApplicationExplainedcount,
-      icon: <Eye width={"22px"} height={"22px"} />,
-    },
-    {
-      bgColor: "#77E4C8",
-      title: "Аноним",
-      statNumber: dataWithRegion?.ApplicationAnonymouscount,
-      icon: <EyeOff width={"22px"} height={"22px"} />,
-    },
-  ];
 
   return (
     <Box
@@ -479,43 +482,22 @@ export const Dashboard: FC<any> = (props) => {
       <Box className="map">
         <FullScreen handle={screenMap}>
           <Text fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}>
-            Ҳудудлар бўйича статистика:
+            Мурожаатлар бўйича статистика:
           </Text>
-          <RadioGroup
-            value={type}
-            display={"flex"}
-            justifyContent={"flex-end"}
-            alignItems={"center"}
-            gap={"10px"}
-            onChange={onChangeType}
-          >
-            <Radio value={TYPE.notDrafts}>Мурожаатлар</Radio>
-            <Radio value={TYPE.drafts}>Қораламалар</Radio>
-          </RadioGroup>
           <SimpleGrid
             columns={{ base: 1, sm: 2, md: 2, xl: 4 }}
             my={"8px"}
             gap={"8px"}
           >
-            {type === TYPE.notDrafts
-              ? statBoxArray.map((item) => (
-                  <StatBox
-                    key={item.title}
-                    bgColor={item.bgColor}
-                    title={item.title}
-                    statNumber={item.statNumber}
-                    icon={item.icon}
-                  />
-                ))
-              : statBoxArrayDrafts.map((item) => (
-                  <StatBox
-                    key={item.title}
-                    bgColor={item.bgColor}
-                    title={item.title}
-                    statNumber={item.statNumber}
-                    icon={item.icon}
-                  />
-                ))}
+            {statBoxArray.map((item) => (
+              <StatBox
+                key={item.title}
+                bgColor={item.bgColor}
+                title={item.title}
+                statNumber={item.statNumber}
+                icon={item.icon}
+              />
+            ))}
           </SimpleGrid>
           <PaperContent>
             <Tooltip label="Катта қилиш">
@@ -636,16 +618,17 @@ export const Dashboard: FC<any> = (props) => {
           <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
               <LineChart data={lineGraph} />
-              <ChartItemNamesList array={Array.from(lineGraph)} />
+              <ChartItemNamesList array={Array.from(lineGraph)} more={false} />
             </Box>
           </PaperContent>
           <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
-              <BarChart data={barGraph} />
+              <BarChart data={barGraph} isMore={isInitalArray} />
               <ChartItemNamesList
                 array={Array.from(barGraph)}
                 sliceFrom={0}
                 sliceTo={10}
+                more={true}
               />
             </Box>
           </PaperContent>

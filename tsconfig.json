@@ -34,6 +34,7 @@
     "src/@core/shared/UI/ExcelTable/index.tsx",
     "src/@core/apps/utils/fn.js",
     "src/@core/pages/Dashboard/model/Model.jsx",
+    "src/@core/pages/DraftsDashboard/model/Model.jsx",
     "src/@core/shared/ui/Autocomplete/index.tsx"
   ],
   "exclude": ["node_modules"]
