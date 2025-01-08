@@ -5,14 +5,13 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Select,
   SimpleGrid,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { buttonStyle, inputStyle, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { responseList } from "@/@core/pages/Callcenter/Leaverequest/model/helper";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
 import dayjs from "dayjs";
@@ -54,35 +53,13 @@ export const FilterTable: FC<Props> = (props) => {
     getDistrict,
   } = useGlobal();
   const { handleSubmit, register, reset, control } = useForm();
+  const [year, setYear] = useState<number | null>(
+    Number(params.get("from_year")) || dayjs().year()
+  );
   const router = useRouter();
 
   const handleChangeYear = (value: { value: number } | null) => {
-    if (value) {
-      reset({
-        applicant: params.get("applicant") || "",
-        operators: params.get("operators") || "null",
-        response: params.get("response") || "null",
-        income_number:
-          params.get("income_number") === "null"
-            ? ""
-            : params.get("income_number"),
-        region: params.get("region") || "null",
-        district: params.get("district") || "null",
-        categoryId: params.get("categoryId") || "null",
-        subCategoryId: params.get("subCategoryId") || "null",
-        from_year: value.value,
-        date_from: dayjs()
-          .date(1)
-          .month(0)
-          .year(value?.value)
-          .format("YYYY-MM-DD"),
-        date_to: dayjs()
-          .date(31)
-          .month(11)
-          .year(value?.value)
-          .format("YYYY-MM-DD"),
-      });
-    }
+    if (value) setYear(value.value);
   };
 
   // CLEAR
@@ -107,26 +84,33 @@ export const FilterTable: FC<Props> = (props) => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      reset({
-        applicant: params.get("applicant") || "",
-        operators: params.get("operators") || "null",
-        response: params.get("response") || "null",
-        income_number:
-          params.get("income_number") === "null"
-            ? ""
-            : params.get("income_number"),
-        region: params.get("region") || "null",
-        district: params.get("district") || "null",
-        categoryId: params.get("categoryId") || "null",
-        subCategoryId: params.get("subCategoryId") || "null",
-        date_from: params.get("date_from") || "null",
-        date_to: params.get("date_to") || "null",
-        from_year: Number(params.get("from_year")) || "null",
-      });
-    }, 1000);
+    reset({
+      applicant: params.get("applicant") || "",
+      operators: params.get("operators") || "null",
+      response: params.get("response") || "null",
+      income_number:
+        params.get("income_number") === "null"
+          ? ""
+          : params.get("income_number"),
+      region: params.get("region") || "null",
+      district: params.get("district") || "null",
+      categoryId: params.get("categoryId") || "null",
+      subCategoryId: params.get("subCategoryId") || "null",
+      from_year: year,
+      date_from: dayjs()
+        .date(1)
+        .month(0)
+        .year(year as number)
+        .format("YYYY-MM-DD"),
+      date_to: dayjs()
+        .date(31)
+        .month(11)
+        .year(year as number)
+        .format("YYYY-MM-DD"),
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [year]);
 
   return (
     <form onSubmit={handleSubmit(handleFinish)} id="filter-callcenter">
