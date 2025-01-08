@@ -6,16 +6,19 @@ Chart.register(...registerables);
 
 type Props = {
   data: any;
+  isMore: boolean;
 };
 
 export const BarChart: FC<Props> = (props) => {
-  const { data } = props;
+  const { data, isMore } = props;
 
   return (
     <Bar
       data={{
         labels: !data
           ? []
+          : isMore
+          ? data?.map((_: string, index: number) => index + 1)
           : data?.slice(0, 10).map((_: string, index: number) => index + 1),
         datasets: [
           {
@@ -31,7 +34,6 @@ export const BarChart: FC<Props> = (props) => {
           },
         ],
       }}
-
       options={{
         plugins: {
           legend: {

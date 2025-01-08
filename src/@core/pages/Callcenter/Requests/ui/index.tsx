@@ -110,7 +110,9 @@ export const Requests: FC = () => {
       values.categoryId || "null"
     }&subCategoryId=${values.subCategoryId || "null"}&date_from=${
       values.date_from || "null"
-    }&date_to=${values.date_to || "null"}`;
+    }&date_to=${values.date_to || "null"}&from_year=${
+      values.from_year || "null"
+    }`;
 
     router.push(query);
   };
@@ -125,9 +127,11 @@ export const Requests: FC = () => {
         params.get("region") || "null"
       }&district=${params.get("district") || "null"}&categoryId=${
         params.get("categoryId") || "null"
-      }&subCategoryId=${params.get("subCategoryId") || "null"}&date_from=${
-        params.get("date_from") || "null"
-      }&date_to=${params.get("date_to") || "null"}`
+      }&subCategoryId=${params.get("subCategoryId") || "null"}&from_year=${
+        params.get("from_year") || "null"
+      }&date_from=${params.get("date_from") || "null"}&date_to=${
+        params.get("date_to") || "null"
+      }`
     );
   };
   const handlePageSizeChange = (pageSize: number) => {
@@ -140,9 +144,11 @@ export const Requests: FC = () => {
         params.get("region") || "null"
       }&district=${params.get("district") || "null"}&categoryId=${
         params.get("categoryId") || "null"
-      }&subCategoryId=${params.get("subCategoryId") || "null"}&date_from=${
-        params.get("date_from") || "null"
-      }&date_to=${params.get("date_to") || "null"}`
+      }&subCategoryId=${params.get("subCategoryId") || "null"}&from_year=${
+        params.get("from_year") || "null"
+      }&date_from=${params.get("date_from") || "null"}&date_to=${
+        params.get("date_to") || "null"
+      }`
     );
   };
 

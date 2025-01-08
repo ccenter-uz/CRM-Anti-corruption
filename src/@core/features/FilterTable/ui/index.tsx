@@ -9,17 +9,13 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import {
-  buttonStyle,
-  inputStyle,
-  labelStyle,
-  selectStyle,
-} from "../model/helper";
+import { buttonStyle, inputStyle, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FC, useEffect } from "react";
 import { responseList } from "@/@core/pages/Callcenter/Leaverequest/model/helper";
 import AutocompleteSelect from "@/@core/shared/ui/Autocomplete";
+import dayjs from "dayjs";
 
 type Props = {
   handleFinish: (data: any) => void;
@@ -27,6 +23,22 @@ type Props = {
   handleChangeRegion: (data: any) => void;
 };
 
+const calculateYearsFrom2024 = (): {
+  label: string | number;
+  value: number;
+}[] => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let year = 2024; year <= currentYear; year++) {
+    years.push(year);
+  }
+  const optionsYear = years.map((item) => ({
+    label: item,
+    value: item,
+  }));
+
+  return optionsYear;
+};
 export const FilterTable: FC<Props> = (props) => {
   const { handleFinish, handleChangeRazdel, handleChangeRegion } = props;
   const params = useSearchParams();
@@ -44,6 +56,35 @@ export const FilterTable: FC<Props> = (props) => {
   const { handleSubmit, register, reset, control } = useForm();
   const router = useRouter();
 
+  const handleChangeYear = (value: { value: number } | null) => {
+    if (value) {
+      reset({
+        applicant: params.get("applicant") || "",
+        operators: params.get("operators") || "null",
+        response: params.get("response") || "null",
+        income_number:
+          params.get("income_number") === "null"
+            ? ""
+            : params.get("income_number"),
+        region: params.get("region") || "null",
+        district: params.get("district") || "null",
+        categoryId: params.get("categoryId") || "null",
+        subCategoryId: params.get("subCategoryId") || "null",
+        from_year: value.value,
+        date_from: dayjs()
+          .date(1)
+          .month(0)
+          .year(value?.value)
+          .format("YYYY-MM-DD"),
+        date_to: dayjs()
+          .date(31)
+          .month(11)
+          .year(value?.value)
+          .format("YYYY-MM-DD"),
+      });
+    }
+  };
+
   // CLEAR
   const handleClear = async () => {
     setPodrazdel([]);
@@ -59,6 +100,7 @@ export const FilterTable: FC<Props> = (props) => {
       response: "null",
       operators: "null",
       applicant: "",
+      from_year: "null",
     });
     await Promise.all([getPodrazdel(), getDistrict()]);
     router.push(`?page=1&pageSize=10`);
@@ -80,6 +122,7 @@ export const FilterTable: FC<Props> = (props) => {
         subCategoryId: params.get("subCategoryId") || "null",
         date_from: params.get("date_from") || "null",
         date_to: params.get("date_to") || "null",
+        from_year: Number(params.get("from_year")) || "null",
       });
     }, 1000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,6 +256,18 @@ export const FilterTable: FC<Props> = (props) => {
                 label: field.title,
               })),
             ]}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="from_year" sx={labelStyle}>
+            Йил бўйича:
+          </FormLabel>
+          <AutocompleteSelect
+            name="from_year"
+            control={control}
+            options={calculateYearsFrom2024()}
+            onChange={handleChangeYear}
+            allowClear
           />
         </FormControl>
         <FormControl>

@@ -22,7 +22,15 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import { Check, Eye, EyeOff, Search, X, Icon } from "react-feather";
+import {
+  Check,
+  Eye,
+  EyeOff,
+  Search,
+  X,
+  Icon,
+  MoreVertical,
+} from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -51,6 +59,7 @@ interface ChartItemNameInterface {
   array: any;
   sliceFrom?: number;
   sliceTo?: number;
+  more?: boolean;
 }
 
 export const DraftsDashboard: FC<any> = (props) => {
@@ -66,6 +75,7 @@ export const DraftsDashboard: FC<any> = (props) => {
   ];
   const params = useSearchParams();
   const router = useRouter();
+  const [isInitalArray, setIsInitalArray] = useState<boolean>(false);
   const { current, pageSize, total, setTotal } = usePagination();
   const {
     razdel,
@@ -273,6 +283,7 @@ export const DraftsDashboard: FC<any> = (props) => {
     array,
     sliceFrom,
     sliceTo,
+    more,
   }: ChartItemNameInterface) => {
     const initialArray = ![sliceFrom, sliceTo].includes(undefined)
       ? array?.slice(sliceFrom, sliceTo)
@@ -292,17 +303,40 @@ export const DraftsDashboard: FC<any> = (props) => {
           alignItems={"space-between"}
           overflow="auto"
         >
-          {initialArray?.map((item: any, index: number) => (
-            <ListItem
-              width={350}
-              key={item.id}
-              fontSize={scssVariables.fonts.span}
-              color={scssVariables.textGreyColor}
-            >
-              {index + 1}. {firstLetterCapitalizer(item?.title)}
-            </ListItem>
-          ))}
+          {isInitalArray
+            ? array?.map((item: any, index: number) => (
+                <ListItem
+                  width={350}
+                  key={item.id}
+                  fontSize={scssVariables.fonts.span}
+                  color={scssVariables.textGreyColor}
+                >
+                  {index + 1}. {firstLetterCapitalizer(item?.title)}
+                </ListItem>
+              ))
+            : initialArray?.map((item: any, index: number) => (
+                <ListItem
+                  width={350}
+                  key={item.id}
+                  fontSize={scssVariables.fonts.span}
+                  color={scssVariables.textGreyColor}
+                >
+                  {index + 1}. {firstLetterCapitalizer(item?.title)}
+                </ListItem>
+              ))}
         </List>
+        {more && (
+          <Button
+            w={"fit-content"}
+            ml={"auto"}
+            variant={"outline"}
+            leftIcon={<MoreVertical size={16} />}
+            fontSize={14}
+            onClick={() => setIsInitalArray(!isInitalArray)}
+          >
+            {initialArray ? "Камроқ" : "Кўпроқ"}
+          </Button>
+        )}
       </SimpleGrid>
     );
   };
@@ -560,11 +594,12 @@ export const DraftsDashboard: FC<any> = (props) => {
           </PaperContent>
           <PaperContent>
             <Box w={"100%"} h={"fit-content"}>
-              <BarChart data={barGraph} />
+              <BarChart data={barGraph} isMore={isInitalArray} />
               <ChartItemNamesList
                 array={Array.from(barGraph)}
                 sliceFrom={0}
                 sliceTo={10}
+                more={true}
               />
             </Box>
           </PaperContent>
