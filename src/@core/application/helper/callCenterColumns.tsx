@@ -33,7 +33,9 @@ export const callcenterColumns = [
     render: (t: any, record: any) => (
       <Link href={`/callcenter/${record.id}`}>
         <Text color={"#2675c7"} _hover={{ opacity: 0.8 }}>
-          {t}
+          {t
+            .replaceAll(new Date().getFullYear().toString(), "")
+            .replace(/\s/g, "")}
         </Text>
       </Link>
     ),
