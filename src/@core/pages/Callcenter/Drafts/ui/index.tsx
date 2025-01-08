@@ -199,7 +199,7 @@ export const Drafts: FC = () => {
             color={scssVariables.textGreyColor}
             fontSize={{ base: "18px", sm: "18px", md: "24px", xl: "24px" }}
           >
-            Қораламалар руйхати: Колл-центр
+            {params.get("from_year")} - Қораламалар руйхати: Колл-центр
           </Text>
           <Button
             leftIcon={
