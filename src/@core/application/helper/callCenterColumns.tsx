@@ -30,15 +30,19 @@ export const callcenterColumns = [
     title: "Кирувчи рақам",
     dataIndex: "incoming_number",
     key: "incoming_number",
-    render: (t: any, record: any) => (
-      <Link href={`/callcenter/${record.id}`}>
-        <Text color={"#2675c7"} _hover={{ opacity: 0.8 }}>
-          {t
-            .replaceAll(new Date().getFullYear().toString(), "")
-            .replace(/\s/g, "")}
-        </Text>
-      </Link>
-    ),
+    render: (t: any, record: any) => {
+      const splited = t.split("/");
+      const seria = splited[0];
+      const number = splited[2];
+
+      return (
+        <Link href={`/callcenter/${record.id}`}>
+          <Text color={"#2675c7"} _hover={{ opacity: 0.8 }}>
+            {`${seria}/${number}`}
+          </Text>
+        </Link>
+      );
+    },
   },
   {
     title: "Вилоят",
