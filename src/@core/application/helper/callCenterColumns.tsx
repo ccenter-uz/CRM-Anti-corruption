@@ -32,13 +32,23 @@ export const callcenterColumns = [
     key: "incoming_number",
     render: (t: any, record: any) => {
       const splited = t.split("/");
-      const seria = splited[0];
-      const number = splited[2];
+      if (splited.length === 3) {
+        const seria = splited[0];
+        const number = splited[2];
+
+        return (
+          <Link href={`/callcenter/${record.id}`}>
+            <Text color={"#2675c7"} _hover={{ opacity: 0.8 }}>
+              {`${seria}/${number}`}
+            </Text>
+          </Link>
+        );
+      }
 
       return (
         <Link href={`/callcenter/${record.id}`}>
           <Text color={"#2675c7"} _hover={{ opacity: 0.8 }}>
-            {`${seria}/${number}`}
+            {t}
           </Text>
         </Link>
       );
