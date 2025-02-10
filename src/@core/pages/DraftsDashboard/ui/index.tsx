@@ -1,6 +1,6 @@
 "use client";
 import { PaperContent } from "@/@core/shared/ui/PaperContent";
-import { FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useLayoutEffect, useState } from "react";
 import {
   Box,
   Flex,
@@ -13,6 +13,7 @@ import {
   Input,
   List,
   ListItem,
+  Select,
 } from "@chakra-ui/react";
 import { TriangleDownIcon } from "@chakra-ui/icons";
 import { FormControl, FormLabel } from "@chakra-ui/react";
@@ -22,15 +23,7 @@ import { buttonStyle, Dashboardcolumns, labelStyle } from "../model/helper";
 import { useGlobal } from "@/@core/application/store/global";
 import BreadCrumb from "@/@core/shared/ui/Breadcrumb";
 import { scssVariables } from "@/@core/application/utils/vars";
-import {
-  Check,
-  Eye,
-  EyeOff,
-  Search,
-  X,
-  Icon,
-  MoreVertical,
-} from "react-feather";
+import { Eye, EyeOff, Search, X, Icon, MoreVertical } from "react-feather";
 import TableGen from "@/@core/shared/ui/Table";
 import Pagination from "@/@core/shared/ui/Pagination";
 import { usePagination } from "@/@core/shared/hook/usePaginate";
@@ -61,6 +54,22 @@ interface ChartItemNameInterface {
   sliceTo?: number;
   more?: boolean;
 }
+const GET_YEARS_FROM_2024 = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let year = 2024; year <= currentYear; year++) {
+    years.push(year);
+  }
+  if (years.length > 0) {
+    return years.map((year) => {
+      return (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      );
+    });
+  }
+};
 
 export const DraftsDashboard: FC<any> = (props) => {
   const breadcrumbs = [
@@ -105,11 +114,28 @@ export const DraftsDashboard: FC<any> = (props) => {
   const screenTable = useFullScreenHandle();
   const [lineGraph, setLineGraph] = useState<any>(false);
   const [barGraph, setBarGraph] = useState<any>(false);
+  const [yearDashboard, setYearDashboard] = useState<number>(
+    new Date().getFullYear()
+  );
+
+  useLayoutEffect(() => {
+    if (
+      typeof window !== undefined &&
+      localStorage.getItem("year-dashboard-draft") !== null
+    ) {
+      setYearDashboard(
+        Number(
+          JSON.parse(localStorage.getItem("year-dashboard-draft") as string)
+        )
+      );
+    }
+  }, []);
 
   // GET-MAP
   const getData = async () => {
     const params = {
       region: id,
+      yearDashboard,
     };
     const res = await getDataWithRegion(params);
     res?.status === 200 && setDataWithRegion(res?.data);
@@ -134,7 +160,10 @@ export const DraftsDashboard: FC<any> = (props) => {
 
       res?.status === 200 && setLineGraph(res?.data);
     } else {
-      const res = await getLineGraph();
+      query = {
+        yearDashboard,
+      };
+      const res = await getLineGraph(query);
 
       res?.status === 200 && setLineGraph(res?.data);
     }
@@ -158,7 +187,10 @@ export const DraftsDashboard: FC<any> = (props) => {
 
       res?.status === 200 && setBarGraph(res?.data);
     } else {
-      const res = await getBarGraph();
+      query = {
+        yearDashboard,
+      };
+      const res = await getBarGraph(query);
 
       res?.status === 200 && setBarGraph(res?.data);
     }
@@ -171,6 +203,7 @@ export const DraftsDashboard: FC<any> = (props) => {
       pageSize: params.get("pageSize") || "10",
       categoryId: params.get("categoryId") || null,
       subCategoryId: params.get("subCategoryId") || null,
+      yearDashboard,
     };
     const res = await getTableData(queryParams);
 
@@ -440,6 +473,13 @@ export const DraftsDashboard: FC<any> = (props) => {
     },
   ];
 
+  const handleSelectYear = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    if (!value) return null;
+    localStorage.setItem("year-dashboard-draft", JSON.stringify(value));
+    setYearDashboard(Number(value));
+  };
+
   return (
     <Box
       p={{ base: "5px 10px", sm: "5px 10px", md: "8px 16px", xl: "8px 16px" }}
@@ -448,6 +488,16 @@ export const DraftsDashboard: FC<any> = (props) => {
       <Flex className="breadcrumb" justifyContent={"flex-end"}>
         <BreadCrumb item={breadcrumbs} />
       </Flex>
+      <Select
+        mt={"8px"}
+        ml={"auto"}
+        w={{ base: "100%", sm: "100%", md: "200px", xl: "200px" }}
+        fontSize={{ base: "17px", sm: "17px", md: "22px", xl: "22px" }}
+        onChange={handleSelectYear}
+        value={yearDashboard}
+      >
+        {GET_YEARS_FROM_2024()}
+      </Select>
 
       {/* MAP */}
       <Box className="map">

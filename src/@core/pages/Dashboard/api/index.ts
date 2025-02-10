@@ -22,11 +22,12 @@ export const getDataWithRegion = async (params: {
   region?: string;
   page?: string;
   pageSize?: string;
+  yearDashboard: number;
 }) => {
   try {
     const response = await api.get(
       "/SectionCategories/Allstatistics/filterWithRegion",
-      { params: {...params, type: "0"}, }
+      { params: { ...params, type: "0" } }
     );
 
     return response;
@@ -39,7 +40,8 @@ export const getDataWithRegion = async (params: {
 export const getWarning = async () => {
   try {
     const response = await api.get(
-      "/SectionCategories/AllstatisticsWithRegion", {
+      "/SectionCategories/AllstatisticsWithRegion",
+      {
         params: {
           type: "0",
         },
@@ -59,10 +61,11 @@ export const getTableData = async (params: {
   region?: string | null;
   page?: string;
   pageSize?: string;
+  yearDashboard: number;
 }) => {
   try {
     const response = await api.get("/SectionCategories/statistics/filter", {
-      params: {...params, type: "0"},
+      params: { ...params, type: "0" },
     });
 
     return response;
@@ -75,7 +78,7 @@ export const getTableData = async (params: {
 export const getLineGraph = async (query?: any) => {
   try {
     const response = await api.get("/SectionCategories/statisticsWithRegion", {
-      params: {...query, type: "0"},
+      params: { ...query, type: "0" },
     });
 
     return response;
@@ -85,12 +88,12 @@ export const getLineGraph = async (query?: any) => {
 };
 
 // GET-BAR-GRAPH
-export const getBarGraph = async (query?:any) => {
+export const getBarGraph = async (query?: any) => {
   try {
     const response = await api.get(
       "/SectionCategories/statisticsWithCategory",
       {
-        params: {...query, type: "0"},
+        params: { ...query, type: "0" },
       }
     );
 
